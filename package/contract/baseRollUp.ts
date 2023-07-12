@@ -7,8 +7,8 @@ export abstract class BaseContractInstance {
         this.rollOutContractAddr = rollOut;
     }
     abstract rollIn(
-        lrTo : string, 
-        leFrom?: string, 
+        To : string, 
+        From?: string, 
         value?: Numbers, 
         refundTo?: string, 
         maxGas?: Numbers, 
@@ -16,7 +16,7 @@ export abstract class BaseContractInstance {
         tokenAddr?: string
     ) : string;
     abstract rollOut(
-        leTo : string, 
+        To : string, 
         chainId?: Numbers, 
         value?: Numbers, 
         tokenAddr?: string

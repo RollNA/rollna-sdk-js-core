@@ -5,10 +5,10 @@ import {Contract} from 'web3-eth-contract';
 import { Numbers } from "web3";
 
 export class ERC20ContractInstance extends BaseContractInstance {
-    rollIn(leTo : string, _lrFrom: string, value: Numbers, refundTo: string, maxGas: Numbers, gasPriceBid: Numbers, tokenAddr: string) {
+    rollIn(lrTo : string, _leFrom: string, value: Numbers, refundTo: string, maxGas: Numbers, gasPriceBid: Numbers, tokenAddr: string) {
         var contract = new Contract(rollInAbi);
         //@ts-ignore
-        return contract.methods.outboundTransferCustomRefund(tokenAddr, refundTo, leTo, value, maxGas, gasPriceBid, "").encodeABI();
+        return contract.methods.outboundTransferCustomRefund(tokenAddr, refundTo, lrTo, value, maxGas, gasPriceBid, "").encodeABI();
     }
     rollOut(leTo : string, _chainId : Numbers, value: Numbers, tokenAddr: string) {
         var contract = new Contract(rollOutAbi);

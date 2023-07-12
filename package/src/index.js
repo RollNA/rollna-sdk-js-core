@@ -42,6 +42,7 @@ function formatRollInInput(fromAddr, fromChainId, amount, destAddr, gas) {
                 from: fromAddr,
                 to: contractInstance.getRollInContractAddr(),
                 gas: gas,
+                value: Web3.utils.toHex(amount),
                 data: data
             };
         }
@@ -54,7 +55,7 @@ function formatRollInERC20Input(fromAddr, fromChainId, amount, tokenAddr, destAd
     if (fromChainInfo != undefined) {
         let contractInstance = instanceFactory_1.ContractInstanceFactory.getContractInstance(true, fromChainId, tokenAddr);
         if (contractInstance != undefined) {
-            let data = contractInstance.rollIn(destAddr, fromAddr, amount, reFundTo, gas);
+            let data = contractInstance.rollIn(destAddr, fromAddr, amount, reFundTo, gas, gasPrice);
             return {
                 from: fromAddr,
                 to: contractInstance.getRollInContractAddr(),
@@ -75,6 +76,7 @@ function formatRollOutInput(fromAddr, toChainId, amount, destAddr, gas) {
             return {
                 from: fromAddr,
                 to: contractInstance.getRollOutContractAddr(),
+                value: Web3.utils.toHex(amount),
                 gas: gas,
                 data: data
             };
@@ -116,7 +118,6 @@ async function getRollOutProof(size, leaf) {
 }
 exports.getRollOutProof = getRollOutProof;
 async function formatClaimTokenInput(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value) {
-    var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
     var contract = new Web3.eth.contract.Contract(IOutbox_json_1.default);
     //@ts-ignore
     return contract.methods.executeTransaction(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value).encodeABI();

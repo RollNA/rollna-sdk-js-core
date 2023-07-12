@@ -29,7 +29,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NodeInterfaceContract = void 0;
 const web3 = __importStar(require("web3"));
 const NodeInterface_json_1 = __importDefault(require("../abi/NodeInterface.json"));
-const IOutbox_json_1 = __importDefault(require("../abi/IOutbox.json"));
 const types_1 = require("../types");
 class NodeInterfaceContract {
     static async getProof(size, leaf) {
@@ -41,9 +40,3 @@ class NodeInterfaceContract {
     }
 }
 exports.NodeInterfaceContract = NodeInterfaceContract;
-async function formatClaimTokenInput(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value) {
-    var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
-    var contract = new web3.eth.contract.Contract(IOutbox_json_1.default);
-    //@ts-ignore
-    return contract.methods.executeTransaction(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value).encodeABI();
-}
