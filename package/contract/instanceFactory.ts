@@ -23,7 +23,7 @@ const ERC20TokenTypeList = new Map<Numbers, Map<string, Array<string>>>([// mapp
 export class ContractInstanceFactory {
     private  constructor() {}
     static getContractInstance(isERC20 : boolean, chainId: Numbers, tokenAddr?: string) : BaseContractInstance|undefined {
-        if (isERC20) {
+        if (!isERC20) {
             return ContractInstanceFactory.getNativeInstance(chainId)
         } else {
             if (!tokenAddr) {
