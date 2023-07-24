@@ -56,12 +56,14 @@ class SupportedChainInfo {
     static ChainInfos;
     constructor() { }
     static async updateChainInfos() {
-        await https_request({ url: chainInfosUrl }, function (err, response, body) {
-            if (!err && response.statusCode == 200) {
-                const infoJson = JSON.parse(body);
+        var ret = await (0, node_fetch_1.default)(rollnaInfoUrl);
+        if (ret.ok) {
+            var res = ret.body?.read().toString();
+            if (res != undefined) {
+                const infoJson = JSON.parse(res);
                 SupportedChainInfo.ChainInfos = infoJson;
             }
-        });
+        }
     }
     static async getChainInfo(chainId) {
         if (!SupportedChainInfo.ChainInfos) {

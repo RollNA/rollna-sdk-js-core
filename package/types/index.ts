@@ -101,12 +101,14 @@ export class SupportedChainInfo {
     protected static ChainInfos : Map<Numbers, ChainInfo>;
     private  constructor() {}
     static async updateChainInfos() {
-        await https_request({url: chainInfosUrl}, function(err: any, response: any, body: any) {
-            if(!err && response.statusCode == 200)  {
-                const infoJson = JSON.parse(body) as Map<Numbers, ChainInfo>;
+        var ret = await fetch(rollnaInfoUrl)
+        if (ret.ok) {
+            var res = ret.body?.read().toString()
+            if (res != undefined) {
+                const infoJson = JSON.parse(res) as Map<Numbers, ChainInfo>;
                 SupportedChainInfo.ChainInfos = infoJson;
             }
-       })
+        }
     }
 
     static async getChainInfo(chainId : Numbers) {
