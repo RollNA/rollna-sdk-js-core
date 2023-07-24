@@ -12,10 +12,13 @@
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/wallet": "^5.7.0",
     "@particle-network/auth": "^0.14.3",
+    "@types/request": "^2.48.8",
     "@typescript-eslint/parser": "^6.0.0",
     "ether": "^0.0.9",
     "ethereumjs-tx": "^2.1.2",
     "ethers": "^6.6.2",
+    "node-fetch": "^3.3.1",
+    "request": "^2.88.2",
     "web3": "^4.0.2",
     "web3-eth-accounts": "^4.0.2"
   },

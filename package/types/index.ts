@@ -1,9 +1,19 @@
 import { Numbers } from "web3";
+import { ErrorType } from "./ErrorType"
+import {updateLatestAAVersion} from "../utils/client/HttpsRpc"
 var https_request = require('request');
+import fetch from "node-fetch"
 
 const rollnaInfoUrl = "https://rollna.io/get_rollna_info";
 const chainInfosUrl = "https://rollna.io/get_chain_infos";
 export const nodeInterfaceContractAddr = "0xfffffffff";
+export const preComplieAddr = "0xfffffff";
+
+export enum ProposalType {
+    Lock,
+    Unlock,
+    Recover
+}
 
 export type AccountType = 'EOA' | 'AA';
 
@@ -28,6 +38,14 @@ export interface RollOutProof {
     proof: string;
 }
 
+export interface UserOperation {
+    signer: string;
+    sender: string;
+    to: string; 
+    value: Numbers;
+    data: string;
+}
+
 export type RollnaInfo = {
     rollnaProvider: string;
     rollnaChainId: Numbers;
@@ -45,24 +63,37 @@ export type ChainInfo = {
 }
 
 export class RollnaChainInfo {
-    public static readonly rollnaInfo : RollnaInfo;
-    private  constructor() {}
-    static async getRollNaInfo() {
-        if (!RollnaChainInfo.rollnaInfo) {
-           await https_request({url: rollnaInfoUrl}, function(err: any, response: any, body: any) {
-                if(!err && response.statusCode == 200)  {
-                    const infoJson = JSON.parse(body);
+    private static rollnaInfo : RollnaInfo;
+    private static accountAbstractionTemplate : string;
+    static async updateRollNaInfo() {
+        if (RollnaChainInfo.rollnaInfo) {
+            var ret = await fetch(rollnaInfoUrl)
+            if (ret.ok) {
+                var res = ret.body?.read().toString()
+                if (res != undefined) {
+                    const infoJson = JSON.parse(res);
                     if (infoJson.provider && infoJson.chainId && infoJson.symbol) {
                         RollnaChainInfo.rollnaInfo.rollnaProvider = infoJson.provider;
                         RollnaChainInfo.rollnaInfo.rollnaChainId = infoJson.chainId;
                         RollnaChainInfo.rollnaInfo.rollnaTokenSymbols = infoJson.symbol;
-                        return RollnaChainInfo.rollnaInfo;
-                    } 
+                    }  
                 }
-           })
-           return undefined
+            }
         }
+    }
+    static async updateAAVersion() {
+        var ret = await updateLatestAAVersion()
+        if (ret != ErrorType.HttpRpcFailed && ret != null) {
+            RollnaChainInfo.accountAbstractionTemplate = ret
+        }       
+        return ret
+    }
+
+    static getRollNaInfo() {
         return RollnaChainInfo.rollnaInfo;
+    }
+    static getAAVersion() {
+        return RollnaChainInfo.accountAbstractionTemplate
     }
 }
 
