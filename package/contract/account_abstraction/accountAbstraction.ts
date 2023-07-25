@@ -22,7 +22,7 @@ export class AccountAbstraction {
         var contract = new Web3.eth.contract.Contract(AAAbi, Sender)
         contract.setProvider(rollnaInfo.rollnaProvider)
         //@ts-ignore
-        return contract.methods.VERSION().send({from: Signer})
+        return contract.methods.VERSION().call({from: Signer})
     }
 
     static getProposalLength(Sender: string, Signer?: string) {
@@ -31,7 +31,7 @@ export class AccountAbstraction {
         var contract = new Web3.eth.contract.Contract(AAAbi, Sender)
         contract.setProvider(rollnaInfo.rollnaProvider)
         //@ts-ignore
-        return contract.methods.proposalLength().send({from: Signer})
+        return contract.methods.proposalLength().call({from: Signer})
     }
 
     static isAALocked(Sender: string, Signer?: string) {
@@ -40,7 +40,7 @@ export class AccountAbstraction {
         var contract = new Web3.eth.contract.Contract(AAAbi, Sender)
         contract.setProvider(rollnaInfo.rollnaProvider)
         //@ts-ignore
-        return contract.methods.locked().send({from: Signer})
+        return contract.methods.locked().call({from: Signer})
     }
 
     static createAccountAbstractionData(owner: string, guardians?: string[], validator?: string) : string {
