@@ -35,10 +35,10 @@ const HttpsRpc_1 = require("../../utils/client/HttpsRpc");
 const Web3 = __importStar(require("web3"));
 const nodeInterface_1 = require("../../contract/nodeInterface");
 const IOutbox_json_1 = __importDefault(require("../../abi/IOutbox.json"));
-function formatRollInInput(fromAddr, fromChainId, amount, destAddr, gas) {
+async function formatRollInInput(fromAddr, fromChainId, amount, destAddr, gas, gateWayAddr, rollOutAddr) {
     let fromChainInfo = types_1.SupportedChainInfo.getChainInfo(fromChainId);
     if (fromChainInfo != undefined) {
-        let contractInstance = instanceFactory_1.ContractInstanceFactory.getContractInstance(false, fromChainId);
+        let contractInstance = await instanceFactory_1.ContractInstanceFactory.getContractInstance(false, fromChainId, gateWayAddr, rollOutAddr);
         if (contractInstance != undefined) {
             let data = contractInstance.rollIn(fromAddr, destAddr, amount);
             return {
@@ -53,10 +53,10 @@ function formatRollInInput(fromAddr, fromChainId, amount, destAddr, gas) {
     return ErrorType_1.ErrorType.FormatInputFailed;
 }
 exports.formatRollInInput = formatRollInInput;
-function formatRollInERC20Input(fromAddr, fromChainId, amount, tokenAddr, destAddr, gas, gasPrice, reFundTo) {
+async function formatRollInERC20Input(fromAddr, fromChainId, amount, tokenAddr, destAddr, gas, gasPrice, reFundTo, gateWayAddr, rollOutAddr) {
     let fromChainInfo = types_1.SupportedChainInfo.getChainInfo(fromChainId);
     if (fromChainInfo != undefined) {
-        let contractInstance = instanceFactory_1.ContractInstanceFactory.getContractInstance(true, fromChainId, tokenAddr);
+        let contractInstance = await instanceFactory_1.ContractInstanceFactory.getContractInstance(true, fromChainId, tokenAddr, gateWayAddr, rollOutAddr);
         if (contractInstance != undefined) {
             let data = contractInstance.rollIn(destAddr, fromAddr, amount, reFundTo, gas, gasPrice);
             return {
@@ -70,10 +70,10 @@ function formatRollInERC20Input(fromAddr, fromChainId, amount, tokenAddr, destAd
     return ErrorType_1.ErrorType.FormatInputFailed;
 }
 exports.formatRollInERC20Input = formatRollInERC20Input;
-function formatRollOutInput(fromAddr, toChainId, amount, destAddr, gas) {
+async function formatRollOutInput(fromAddr, toChainId, amount, destAddr, gas, gateWayAddr, rollOutAddr) {
     let toChainInfo = types_1.SupportedChainInfo.getChainInfo(toChainId);
     if (toChainInfo != undefined) {
-        let contractInstance = instanceFactory_1.ContractInstanceFactory.getContractInstance(false, toChainId);
+        let contractInstance = await instanceFactory_1.ContractInstanceFactory.getContractInstance(false, toChainId, gateWayAddr, rollOutAddr);
         if (contractInstance != undefined) {
             let data = contractInstance.rollOut(destAddr, toChainId);
             return {
@@ -88,10 +88,10 @@ function formatRollOutInput(fromAddr, toChainId, amount, destAddr, gas) {
     return ErrorType_1.ErrorType.FormatInputFailed;
 }
 exports.formatRollOutInput = formatRollOutInput;
-function formatRollOutERC20Input(fromAddr, toChainId, amount, tokenAddr, destAddr, gas) {
+async function formatRollOutERC20Input(fromAddr, toChainId, amount, tokenAddr, destAddr, gas, gateWayAddr, rollOutAddr) {
     let toChainInfo = types_1.SupportedChainInfo.getChainInfo(toChainId);
     if (toChainInfo != undefined) {
-        let contractInstance = instanceFactory_1.ContractInstanceFactory.getContractInstance(true, toChainId, tokenAddr);
+        let contractInstance = await instanceFactory_1.ContractInstanceFactory.getContractInstance(true, toChainId, tokenAddr, gateWayAddr, rollOutAddr);
         if (contractInstance != undefined) {
             let data = contractInstance.rollOut(destAddr, toChainId, amount, tokenAddr);
             return {

@@ -2,51 +2,52 @@ import { Numbers } from "web3";
 import {BaseContractInstance} from "./baseRollUp"
 import {NativeContractInstance} from "./nativeRollUp"
 import {ERC20ContractInstance} from "./ERC20RollUp"
-
-
-// [A, [B, C]]
-// A stands for chainId; B stands for rollin contract addr for native token in chain A
-const nativeTokenTypeList = new Map<Numbers, Array<string>>([// mapping from chainid to contract instance construct function
-    [5, ["0xaaa", "0xbbb"]], //this is just a demo, waiting for contract abi and interface
-]);
-
-// [A, [D, [B, C]]]
-// A stands for chainId; D stands for the erc20 token's contract addr; B,C stands for this erc20's rollup contracts addr
-const ERC20TokenTypeList = new Map<Numbers, Map<string, Array<string>>>([// mapping from chainid to contract instance construct function
-    [5, new Map([
-        ["0xfffff", ["0xaaa", "0xbbb"]],//this is just a demo, waiting for contract abi and interface
-    ])],
-]);
-
-
+import {SupportedChainInfo, EthRollOutAddr} from "../types/index"
 
 export class ContractInstanceFactory {
     private  constructor() {}
-    static getContractInstance(isERC20 : boolean, chainId: Numbers, tokenAddr?: string) : BaseContractInstance|undefined {
+    static async getContractInstance(isERC20 : boolean, chainId: Numbers, tokenAddr?: string, gateWayAddr?: string, rollOutAddr?: string) : Promise<BaseContractInstance|undefined> {
         if (!isERC20) {
-            return ContractInstanceFactory.getNativeInstance(chainId)
+            return ContractInstanceFactory.getNativeInstance(chainId, gateWayAddr, rollOutAddr)
         } else {
             if (!tokenAddr) {
                 return
             }
-            return ContractInstanceFactory.getERC20Instance(chainId, tokenAddr)
+            return ContractInstanceFactory.getERC20Instance(chainId, tokenAddr, gateWayAddr, rollOutAddr)
         }
     } 
-    private static getNativeInstance(chainId: Numbers) : BaseContractInstance|undefined {
-        let contractAddrs = nativeTokenTypeList.get(chainId)
-        if (contractAddrs != undefined && contractAddrs.length == 2) {
-            return new NativeContractInstance(contractAddrs[0], contractAddrs[1])
+    private static async getNativeInstance(chainId: Numbers, routerAddr?: string, rollOutAddr?: string) : Promise<BaseContractInstance|undefined> {
+        let inner = await SupportedChainInfo.getChainInfo(chainId)
+        if (inner != undefined) {
+            let _routerAddr = inner.EthGatewayAddr
+            let _rollOutAddr = EthRollOutAddr
+            if (routerAddr != undefined) {
+                _routerAddr = routerAddr
+            }
+            if (rollOutAddr != undefined) {
+                _rollOutAddr = rollOutAddr
+            }
+            return new NativeContractInstance(_routerAddr, _rollOutAddr)
         }
     }
-    private static getERC20Instance(chainId: Numbers, tokenAddr: string) : BaseContractInstance|undefined {
-        let inner = ERC20TokenTypeList.get(chainId)
+    private static async getERC20Instance(chainId: Numbers, tokenAddr: string, routerAddr?: string, rollOutAddr?: string) : Promise<BaseContractInstance|undefined> {
+        let inner = await SupportedChainInfo.getChainInfo(chainId)
         if (inner != undefined) {
-            let contractAddrs = inner.get(tokenAddr)
-            if (contractAddrs != undefined && contractAddrs.length == 2) {
-                return new ERC20ContractInstance(contractAddrs[0], contractAddrs[1])
-            }
+                let tokenInfo = inner.ContractInfos.get(tokenAddr)
+                if (tokenInfo == undefined) {
+                    return
+                }
+                let _routerAddr = inner.RouterAddr    
+                
+                if (routerAddr != undefined) {
+                    _routerAddr = routerAddr
+                }
+                let _rollOutAddr = tokenInfo.rollOutRouterAddr
+                if (rollOutAddr != undefined) {
+                    _rollOutAddr = rollOutAddr
+                }
+                return new ERC20ContractInstance(_routerAddr, _rollOutAddr)
         }
-
     }
 }
 

@@ -8,6 +8,7 @@ const rollnaInfoUrl = "https://rollna.io/get_rollna_info";
 const chainInfosUrl = "https://rollna.io/get_chain_infos";
 export const nodeInterfaceContractAddr = "0xfffffffff";
 export const preComplieAddr = "0xfffffff";
+export const EthRollOutAddr = "0xfffffff";
 
 export enum ProposalType {
     Lock,
@@ -52,14 +53,19 @@ export type RollnaInfo = {
     rollnaTokenSymbols: string;
 }
 
-export type NativeContractInfo = {
-    RollnaContractAddr: string;
-    TokenSymbol: string;
+export type supportedErc20Tokens = {
+    tokenAddr: string;
+    gatewayAddr: string;
+    destTokenAddr: string;
+    rollOutRouterAddr: string;
 }
 
 export type ChainInfo = {
     Provider?: string;
-    ContractInfos: Map<string, NativeContractInfo>;
+    ContractInfos: Map<string, supportedErc20Tokens>;
+    RouterAddr: string;
+    EthGatewayAddr: string;
+    ChainId: string;
 }
 
 export class RollnaChainInfo {

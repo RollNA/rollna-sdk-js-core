@@ -48,21 +48,21 @@ class AccountAbstraction {
         var contract = new Web3.eth.contract.Contract(AccountAbstraction_json_1.default, Sender);
         contract.setProvider(rollnaInfo.rollnaProvider);
         //@ts-ignore
-        return contract.methods.VERSION().send({ from: Signer });
+        return contract.methods.VERSION().call({ from: Signer });
     }
     static getProposalLength(Sender, Signer) {
         var rollnaInfo = types_1.RollnaChainInfo.getRollNaInfo();
         var contract = new Web3.eth.contract.Contract(AccountAbstraction_json_1.default, Sender);
         contract.setProvider(rollnaInfo.rollnaProvider);
         //@ts-ignore
-        return contract.methods.proposalLength().send({ from: Signer });
+        return contract.methods.proposalLength().call({ from: Signer });
     }
     static isAALocked(Sender, Signer) {
         var rollnaInfo = types_1.RollnaChainInfo.getRollNaInfo();
         var contract = new Web3.eth.contract.Contract(AccountAbstraction_json_1.default, Sender);
         contract.setProvider(rollnaInfo.rollnaProvider);
         //@ts-ignore
-        return contract.methods.locked().send({ from: Signer });
+        return contract.methods.locked().call({ from: Signer });
     }
     static createAccountAbstractionData(owner, guardians, validator) {
         var contract = new Web3.eth.contract.Contract(AccountAbstraction_json_1.default);
@@ -113,10 +113,10 @@ class AccountAbstraction {
         //@ts-ignore
         return contract.methods.submitProposal(Number(ProposalType.toString())).encodeABI();
     }
-    static createAARolloutData(Signer, Sender, toChainId, amount, destAddr) {
+    static async createAARolloutData(Signer, Sender, toChainId, amount, destAddr) {
         let toChainInfo = types_1.SupportedChainInfo.getChainInfo(toChainId);
         if (toChainInfo != undefined) {
-            let contractInstance = instanceFactory_1.ContractInstanceFactory.getContractInstance(false, toChainId);
+            let contractInstance = await instanceFactory_1.ContractInstanceFactory.getContractInstance(false, toChainId);
             if (contractInstance != undefined) {
                 let innerData = contractInstance.rollOut(destAddr, toChainId);
                 return Web3.eth.abi.encodeParameter(UserOperation_json_1.default, {
@@ -129,10 +129,10 @@ class AccountAbstraction {
         }
         return ErrorType_1.ErrorType.UnsupportedChainOrToken;
     }
-    static createAARolloutErc20Data(Signer, Sender, toChainId, amount, destAddr, tokenAddr) {
+    static async createAARolloutErc20Data(Signer, Sender, toChainId, amount, destAddr, tokenAddr) {
         let toChainInfo = types_1.SupportedChainInfo.getChainInfo(toChainId);
         if (toChainInfo != undefined) {
-            let contractInstance = instanceFactory_1.ContractInstanceFactory.getContractInstance(true, toChainId, tokenAddr);
+            let contractInstance = await instanceFactory_1.ContractInstanceFactory.getContractInstance(true, toChainId, tokenAddr);
             if (contractInstance != undefined) {
                 let innerData = contractInstance.rollOut(destAddr, toChainId, amount, tokenAddr);
                 return Web3.eth.abi.encodeParameter(UserOperation_json_1.default, {

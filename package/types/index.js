@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ProposalType = exports.preComplieAddr = exports.nodeInterfaceContractAddr = void 0;
+exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ProposalType = exports.EthRollOutAddr = exports.preComplieAddr = exports.nodeInterfaceContractAddr = void 0;
 const ErrorType_1 = require("./ErrorType");
 const HttpsRpc_1 = require("../utils/client/HttpsRpc");
 var https_request = require('request');
@@ -12,6 +12,7 @@ const rollnaInfoUrl = "https://rollna.io/get_rollna_info";
 const chainInfosUrl = "https://rollna.io/get_chain_infos";
 exports.nodeInterfaceContractAddr = "0xfffffffff";
 exports.preComplieAddr = "0xfffffff";
+exports.EthRollOutAddr = "0xfffffff";
 var ProposalType;
 (function (ProposalType) {
     ProposalType[ProposalType["Lock"] = 0] = "Lock";

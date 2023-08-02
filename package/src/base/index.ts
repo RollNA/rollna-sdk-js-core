@@ -8,16 +8,18 @@ import * as Web3 from "web3"
 import { NodeInterfaceContract } from "../../contract/nodeInterface"
 import claimAbi from "../../abi/IOutbox.json"
 
-export function formatRollInInput(
+export async function formatRollInInput(
     fromAddr : string, 
     fromChainId: Numbers, 
     amount: Numbers, 
     destAddr: string,
-    gas: Numbers
-    ) : CommonInput | ErrorType {
+    gas: Numbers,
+    gateWayAddr?: string,
+    rollOutAddr?: string,
+    ) : Promise<CommonInput | ErrorType> {
         let fromChainInfo = SupportedChainInfo.getChainInfo(fromChainId)
         if (fromChainInfo != undefined) {
-            let contractInstance = ContractInstanceFactory.getContractInstance(false, fromChainId);
+            let contractInstance = await ContractInstanceFactory.getContractInstance(false, fromChainId, gateWayAddr, rollOutAddr);
             if (contractInstance != undefined) {
                let data = contractInstance.rollIn(fromAddr, destAddr, amount)
                return {
@@ -32,7 +34,7 @@ export function formatRollInInput(
         return ErrorType.FormatInputFailed
 }
 
-export function formatRollInERC20Input(
+export async function formatRollInERC20Input(
     fromAddr : string, 
     fromChainId: Numbers, 
     amount: Numbers, 
@@ -41,10 +43,12 @@ export function formatRollInERC20Input(
     gas: Numbers,
     gasPrice: Numbers,
     reFundTo: string,
-    ) : CommonInput | ErrorType {
+    gateWayAddr?: string,
+    rollOutAddr?: string,
+    ) : Promise<CommonInput | ErrorType> {
         let fromChainInfo = SupportedChainInfo.getChainInfo(fromChainId)
         if (fromChainInfo != undefined) {
-            let contractInstance = ContractInstanceFactory.getContractInstance(true, fromChainId, tokenAddr);
+            let contractInstance = await ContractInstanceFactory.getContractInstance(true, fromChainId, tokenAddr, gateWayAddr, rollOutAddr);
             if (contractInstance != undefined) {
                let data = contractInstance.rollIn(destAddr, fromAddr, amount, reFundTo, gas, gasPrice)
                return {
@@ -58,16 +62,18 @@ export function formatRollInERC20Input(
         return ErrorType.FormatInputFailed
 }
 
-export function formatRollOutInput(
+export async function formatRollOutInput(
     fromAddr : string, 
     toChainId: Numbers, 
     amount: Numbers, 
     destAddr: string,
-    gas: Numbers
-    ) : CommonInput | ErrorType {
+    gas: Numbers,
+    gateWayAddr?: string,
+    rollOutAddr?: string,
+    ) : Promise<CommonInput | ErrorType> {
         let toChainInfo = SupportedChainInfo.getChainInfo(toChainId)
         if (toChainInfo != undefined) {
-            let contractInstance = ContractInstanceFactory.getContractInstance(false, toChainId);
+            let contractInstance = await ContractInstanceFactory.getContractInstance(false, toChainId, gateWayAddr, rollOutAddr);
             if (contractInstance != undefined) {
                let data = contractInstance.rollOut(destAddr, toChainId)
                return {
@@ -82,17 +88,19 @@ export function formatRollOutInput(
         return ErrorType.FormatInputFailed
 }
 
-export function formatRollOutERC20Input(
+export async function formatRollOutERC20Input(
     fromAddr : string, 
     toChainId: Numbers, 
     amount: Numbers, 
     tokenAddr: string,
     destAddr: string,
-    gas: Numbers
-    ) : CommonInput | ErrorType {
+    gas: Numbers,
+    gateWayAddr?: string,
+    rollOutAddr?: string,
+    ) : Promise<CommonInput | ErrorType> {
         let toChainInfo = SupportedChainInfo.getChainInfo(toChainId)
         if (toChainInfo != undefined) {
-            let contractInstance = ContractInstanceFactory.getContractInstance(true, toChainId, tokenAddr);
+            let contractInstance = await ContractInstanceFactory.getContractInstance(true, toChainId, tokenAddr, gateWayAddr, rollOutAddr);
             if (contractInstance != undefined) {
                let data = contractInstance.rollOut(destAddr, toChainId, amount, tokenAddr)
                return {
