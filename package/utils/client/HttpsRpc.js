@@ -50,10 +50,7 @@ async function getRollOutTx(sender) {
     if (ret.ok) {
         var rawRes = ret.body?.read().toString();
         if (rawRes != undefined) {
-            var res = JSON.parse(rawRes);
-            if (Array.isArray(res)) {
-                return res;
-            }
+            return JSON.parse(rawRes);
         }
     }
     return ErrorType_1.ErrorType.HttpRpcFailed;
