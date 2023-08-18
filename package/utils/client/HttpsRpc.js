@@ -35,7 +35,7 @@ async function updateLatestAAVersion() {
 }
 exports.updateLatestAAVersion = updateLatestAAVersion;
 async function getClaimParams(TxHash) {
-    var ret = await (0, node_fetch_1.default)(mappingAAUrl + "txhash?=" + TxHash);
+    var ret = await (0, node_fetch_1.default)(getClaimParamsUrl + "txhash?=" + TxHash);
     if (ret.ok) {
         var rawRes = ret.body?.read().toString();
         if (rawRes != undefined) {
