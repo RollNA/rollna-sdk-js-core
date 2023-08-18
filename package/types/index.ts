@@ -2,6 +2,7 @@ import { Numbers } from "web3";
 import { ErrorType } from "./ErrorType"
 import {updateLatestAAVersion} from "../utils/client/HttpsRpc"
 var https_request = require('request');
+//@ts-ignore
 import fetch from "node-fetch"
 
 const rollnaInfoUrl = "https://rollna.io/get_rollna_info";

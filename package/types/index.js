@@ -7,6 +7,7 @@ exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ProposalType = ex
 const ErrorType_1 = require("./ErrorType");
 const HttpsRpc_1 = require("../utils/client/HttpsRpc");
 var https_request = require('request');
+//@ts-ignore
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const rollnaInfoUrl = "https://rollna.io/get_rollna_info";
 const chainInfosUrl = "https://rollna.io/get_chain_infos";

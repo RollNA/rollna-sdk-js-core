@@ -4,12 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRollOutTx = exports.getClaimParams = exports.updateLatestAAVersion = exports.lookupAAs = void 0;
+//@ts-ignore
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const ErrorType_1 = require("../../types/ErrorType");
 const mappingAAUrl = "https://rollna.io/mappingAA";
 const latestAAAddr = "https://rollna.io/latestAAAddr";
-const getClaimParamsUrl = "https://rollna.io/api/getClaimParams";
-const getRollOutTxUrl = "https://rollna.io/api/getRollOutTx";
+const getClaimParamsUrl = "http://127.0.0.1:8331/api/getClaimParams";
+const getRollOutTxUrl = "http://127.0.0.1:8331/api/getRollOutTx";
 async function lookupAAs(Eoa) {
     var ret = await (0, node_fetch_1.default)(mappingAAUrl + "?eoa=" + Eoa);
     if (ret.ok) {
@@ -35,11 +36,13 @@ async function updateLatestAAVersion() {
 }
 exports.updateLatestAAVersion = updateLatestAAVersion;
 async function getClaimParams(TxHash) {
-    var ret = await (0, node_fetch_1.default)(getClaimParamsUrl + "txhash?=" + TxHash);
+    var ret = await (0, node_fetch_1.default)(getClaimParamsUrl + "?txhash=" + TxHash);
     if (ret.ok) {
         var rawRes = ret.body?.read().toString();
         if (rawRes != undefined) {
-            return JSON.parse(rawRes);
+            var res = JSON.parse(rawRes);
+            if (res["code"] == 0)
+                return res["data"];
         }
     }
     return ErrorType_1.ErrorType.HttpRpcFailed;
@@ -50,9 +53,18 @@ async function getRollOutTx(sender) {
     if (ret.ok) {
         var rawRes = ret.body?.read().toString();
         if (rawRes != undefined) {
-            return JSON.parse(rawRes);
+            var res = JSON.parse(rawRes);
+            if (res["code"] == 0)
+                return res["data"];
         }
     }
     return ErrorType_1.ErrorType.HttpRpcFailed;
 }
 exports.getRollOutTx = getRollOutTx;
+//@ts-ignore
+getRollOutTx("0x777ADD3378B999235CCE77F71292DAC1E8095FFC").then((data) => {
+    console.log(data);
+});
+getClaimParams("0xbd6de6cf1cb7573a158d16be1261f925bfe24709cfea82338386ed83899e8633").then((data) => {
+    console.log(data);
+});
