@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatUpgradeAAInput = exports.formatAACallContractInput = exports.formatAATransferInput = exports.formatAARolloutErc20Input = exports.formatAARolloutInput = exports.formatSubmitProposalInput = exports.formatRemoveGuardiansInput = exports.formatAddGuardiansInput = exports.formatSetValidatorInput = exports.formatRecoverInput = exports.formatUnlockInput = exports.formatLockInput = exports.formatAccountAbstractionFromAAInput = exports.formatAccountAbstractionInput = exports.isAALocked = exports.getProposalLength = exports.getAAVersion = exports.formatClaimTokenInput = exports.getRollOutProof = exports.getRollnaInfo = exports.estimateRollInGasPrice = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
+exports.formatUpgradeAAInput = exports.formatAACallContractInput = exports.formatAATransferInput = exports.formatAARolloutErc20Input = exports.formatAARolloutInput = exports.formatSubmitProposalInput = exports.formatRemoveGuardiansInput = exports.formatAddGuardiansInput = exports.formatSetValidatorInput = exports.formatRecoverInput = exports.formatUnlockInput = exports.formatLockInput = exports.formatAccountAbstractionFromAAInput = exports.formatAccountAbstractionInput = exports.isAALocked = exports.getProposalLength = exports.getAAVersion = exports.formatClaimTokenInput = exports.getRollOutProof = exports.getMerkleTreeState = exports.getRollnaInfo = exports.estimateRollInGasPrice = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
 const ErrorType_1 = require("../../types/ErrorType");
 const types_1 = require("../../types");
 const instanceFactory_1 = require("../../contract/instanceFactory");
@@ -35,6 +35,7 @@ const HttpsRpc_1 = require("../../utils/client/HttpsRpc");
 const Web3 = __importStar(require("web3"));
 const nodeInterface_1 = require("../../contract/nodeInterface");
 const IOutbox_json_1 = __importDefault(require("../../abi/IOutbox.json"));
+const ArbSys_json_1 = __importDefault(require("../../abi/ArbSys.json"));
 async function formatRollInInput(fromAddr, fromChainId, amount, destAddr, gas, gateWayAddr, rollOutAddr) {
     let fromChainInfo = types_1.SupportedChainInfo.getChainInfo(fromChainId);
     if (fromChainInfo != undefined) {
@@ -116,6 +117,14 @@ async function getRollnaInfo() {
     return await types_1.RollnaChainInfo.getRollNaInfo();
 }
 exports.getRollnaInfo = getRollnaInfo;
+async function getMerkleTreeState() {
+    var rollnaInfo = types_1.RollnaChainInfo.getRollNaInfo();
+    var contract = new Web3.eth.contract.Contract(ArbSys_json_1.default);
+    contract.setProvider(rollnaInfo.rollnaProvider);
+    //@ts-ignore
+    return await contract.methods.sendMerkleTreeState().call();
+}
+exports.getMerkleTreeState = getMerkleTreeState;
 async function getRollOutProof(size, leaf) {
     return nodeInterface_1.NodeInterfaceContract.getProof(size, leaf);
 }

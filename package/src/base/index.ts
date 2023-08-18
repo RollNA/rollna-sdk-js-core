@@ -7,6 +7,7 @@ import { lookupAAs } from "../../utils/client/HttpsRpc"
 import * as Web3 from "web3"
 import { NodeInterfaceContract } from "../../contract/nodeInterface"
 import claimAbi from "../../abi/IOutbox.json"
+import ArbAbi from "../../abi/ArbSys.json"
 
 export async function formatRollInInput(
     fromAddr : string, 
@@ -123,6 +124,15 @@ export async function estimateRollInGasPrice(httpProvider: string, input: Common
 
 export async function getRollnaInfo() : Promise<RollnaInfo|ErrorType> {
     return await RollnaChainInfo.getRollNaInfo()
+}
+
+export async function getMerkleTreeState(): Promise<any> {
+    var rollnaInfo = RollnaChainInfo.getRollNaInfo()
+
+    var contract = new Web3.eth.contract.Contract(ArbAbi)
+    contract.setProvider(rollnaInfo.rollnaProvider)
+    //@ts-ignore
+    return await contract.methods.sendMerkleTreeState().call()
 }
 
 export async function getRollOutProof(size: Numbers, leaf: Numbers) : Promise<any> {
