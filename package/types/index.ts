@@ -1,15 +1,12 @@
 import { Numbers } from "web3";
 import { ErrorType } from "./ErrorType"
 import {updateLatestAAVersion} from "../utils/client/HttpsRpc"
-var https_request = require('request');
-//@ts-ignore
-import fetch from "node-fetch"
-
-const rollnaInfoUrl = "https://rollna.io/get_rollna_info";
-const chainInfosUrl = "https://rollna.io/get_chain_infos";
+const rollnaInfoUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/rollna_info.json";
+const chainInfosUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/content.json";
 export const nodeInterfaceContractAddr = "0xfffffffff";
 export const preComplieAddr = "0xfffffff";
-export const EthRollOutAddr = "0xfffffff";
+export const RollOutAddr = "0x0000000000000000000000000000000000000064";
+export const ArbSysAddr="0x0000000000000000000000000000000000000064"
 
 export enum ProposalType {
     Lock,
@@ -58,7 +55,6 @@ export type supportedErc20Tokens = {
     tokenAddr: string;
     gatewayAddr: string;
     destTokenAddr: string;
-    rollOutRouterAddr: string;
 }
 
 export type ChainInfo = {
@@ -72,19 +68,20 @@ export type ChainInfo = {
 export class RollnaChainInfo {
     private static rollnaInfo : RollnaInfo;
     private static accountAbstractionTemplate : string;
+    // test done
     static async updateRollNaInfo() {
-        if (RollnaChainInfo.rollnaInfo) {
-            var ret = await fetch(rollnaInfoUrl)
-            if (ret.ok) {
-                var res = ret.body?.read().toString()
-                if (res != undefined) {
-                    const infoJson = JSON.parse(res);
-                    if (infoJson.provider && infoJson.chainId && infoJson.symbol) {
-                        RollnaChainInfo.rollnaInfo.rollnaProvider = infoJson.provider;
-                        RollnaChainInfo.rollnaInfo.rollnaChainId = infoJson.chainId;
-                        RollnaChainInfo.rollnaInfo.rollnaTokenSymbols = infoJson.symbol;
-                    }  
-                }
+        var ret = await fetch(rollnaInfoUrl)
+        if (ret.ok) {
+            var infoJson = await ret.json()
+            if (infoJson != undefined) {
+                if (infoJson.provider && infoJson.chainId && infoJson.symbol) {
+                    var TempRollnaInfo : RollnaInfo = {
+                        rollnaProvider: infoJson.provider,
+                        rollnaChainId: infoJson.chainId,
+                        rollnaTokenSymbols: infoJson.symbol
+                    }
+                    RollnaChainInfo.rollnaInfo = TempRollnaInfo
+                }  
             }
         }
     }
@@ -96,7 +93,11 @@ export class RollnaChainInfo {
         return ret
     }
 
-    static getRollNaInfo() {
+    // test done
+    static async getRollNaInfo() {
+        if (!RollnaChainInfo.rollnaInfo) {
+            await RollnaChainInfo.updateRollNaInfo()
+        }
         return RollnaChainInfo.rollnaInfo;
     }
     static getAAVersion() {
@@ -107,17 +108,39 @@ export class RollnaChainInfo {
 export class SupportedChainInfo {
     protected static ChainInfos : Map<Numbers, ChainInfo>;
     private  constructor() {}
+    // test done
     static async updateChainInfos() {
-        var ret = await fetch(rollnaInfoUrl)
+        var TempChainInfos = new Map<Numbers, ChainInfo>();
+        var ret = await fetch(chainInfosUrl)
         if (ret.ok) {
-            var res = ret.body?.read().toString()
+            var res = await ret.json()
             if (res != undefined) {
-                const infoJson = JSON.parse(res) as Map<Numbers, ChainInfo>;
-                SupportedChainInfo.ChainInfos = infoJson;
+                for (const v of res) {
+                    var ContractInfos = new Map<string, supportedErc20Tokens>();
+                    for (const s of v.ChainInfo.supportedErc20Tokens) {
+                        var contract_info : supportedErc20Tokens = {
+                            tokenAddr: s.tokenAddr,
+                            gatewayAddr: s.gatewayAddr,
+                            destTokenAddr: s.destTokenAddr
+                        }
+                        ContractInfos.set(s.tokenAddr, contract_info)
+                    }
+                    var chainInfo: ChainInfo = {
+                        ContractInfos: ContractInfos,
+                        RouterAddr: v.ChainInfo.routerAddr,
+                        EthGatewayAddr: v.ChainInfo.EthGatewayAddr,
+                        ChainId: v.ChainInfo.chainId
+                    }
+                    chainInfo.ChainId = v.ChainInfo.chainId
+                    TempChainInfos.set(v.ChainInfo.chainId, chainInfo)
+                }
+                SupportedChainInfo.ChainInfos = TempChainInfos
+                //SupportedChainInfo.ChainInfos = infoJson;
             }
         }
     }
 
+    // test done
     static async getChainInfo(chainId : Numbers) {
         if (!SupportedChainInfo.ChainInfos) {
             await SupportedChainInfo.updateChainInfos();

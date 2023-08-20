@@ -36,6 +36,7 @@ const Web3 = __importStar(require("web3"));
 const nodeInterface_1 = require("../../contract/nodeInterface");
 const IOutbox_json_1 = __importDefault(require("../../abi/IOutbox.json"));
 const ArbSys_json_1 = __importDefault(require("../../abi/ArbSys.json"));
+const Consts_1 = require("../../types/Consts");
 async function formatRollInInput(fromAddr, fromChainId, amount, destAddr, gas, gateWayAddr, rollOutAddr) {
     let fromChainInfo = types_1.SupportedChainInfo.getChainInfo(fromChainId);
     if (fromChainInfo != undefined) {
@@ -117,12 +118,15 @@ async function getRollnaInfo() {
     return await types_1.RollnaChainInfo.getRollNaInfo();
 }
 exports.getRollnaInfo = getRollnaInfo;
+//test done
 async function getMerkleTreeState() {
-    var rollnaInfo = types_1.RollnaChainInfo.getRollNaInfo();
-    var contract = new Web3.eth.contract.Contract(ArbSys_json_1.default);
+    var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
+    var contract = new Web3.eth.contract.Contract(ArbSys_json_1.default, Consts_1.ArbSysAddr);
     contract.setProvider(rollnaInfo.rollnaProvider);
     //@ts-ignore
-    return await contract.methods.sendMerkleTreeState().call();
+    var ret = await contract.methods.sendMerkleTreeState().call();
+    //@ts-ignore
+    return Number(ret["size"]);
 }
 exports.getMerkleTreeState = getMerkleTreeState;
 async function getRollOutProof(size, leaf) {

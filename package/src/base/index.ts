@@ -8,6 +8,7 @@ import * as Web3 from "web3"
 import { NodeInterfaceContract } from "../../contract/nodeInterface"
 import claimAbi from "../../abi/IOutbox.json"
 import ArbAbi from "../../abi/ArbSys.json"
+import { ArbSysAddr } from "../../types/";
 
 export async function formatRollInInput(
     fromAddr : string, 
@@ -126,13 +127,16 @@ export async function getRollnaInfo() : Promise<RollnaInfo|ErrorType> {
     return await RollnaChainInfo.getRollNaInfo()
 }
 
+//test done
 export async function getMerkleTreeState(): Promise<any> {
-    var rollnaInfo = RollnaChainInfo.getRollNaInfo()
+    var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
 
-    var contract = new Web3.eth.contract.Contract(ArbAbi)
+    var contract = new Web3.eth.contract.Contract(ArbAbi, ArbSysAddr)
     contract.setProvider(rollnaInfo.rollnaProvider)
     //@ts-ignore
-    return await contract.methods.sendMerkleTreeState().call()
+    var ret = await contract.methods.sendMerkleTreeState().call()
+    //@ts-ignore
+    return Number(ret["size"])
 }
 
 export async function getRollOutProof(size: Numbers, leaf: Numbers) : Promise<any> {

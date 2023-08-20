@@ -43,22 +43,22 @@ class AccountAbstraction {
         }
         this.sender = Sender;
     }
-    static getAAVersion(Sender, Signer) {
-        var rollnaInfo = types_1.RollnaChainInfo.getRollNaInfo();
+    static async getAAVersion(Sender, Signer) {
+        var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
         var contract = new Web3.eth.contract.Contract(AccountAbstraction_json_1.default, Sender);
         contract.setProvider(rollnaInfo.rollnaProvider);
         //@ts-ignore
         return contract.methods.VERSION().call({ from: Signer });
     }
-    static getProposalLength(Sender, Signer) {
-        var rollnaInfo = types_1.RollnaChainInfo.getRollNaInfo();
+    static async getProposalLength(Sender, Signer) {
+        var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
         var contract = new Web3.eth.contract.Contract(AccountAbstraction_json_1.default, Sender);
         contract.setProvider(rollnaInfo.rollnaProvider);
         //@ts-ignore
         return contract.methods.proposalLength().call({ from: Signer });
     }
-    static isAALocked(Sender, Signer) {
-        var rollnaInfo = types_1.RollnaChainInfo.getRollNaInfo();
+    static async isAALocked(Sender, Signer) {
+        var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
         var contract = new Web3.eth.contract.Contract(AccountAbstraction_json_1.default, Sender);
         contract.setProvider(rollnaInfo.rollnaProvider);
         //@ts-ignore

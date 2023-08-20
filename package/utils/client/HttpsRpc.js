@@ -61,10 +61,3 @@ async function getRollOutTx(sender) {
     return ErrorType_1.ErrorType.HttpRpcFailed;
 }
 exports.getRollOutTx = getRollOutTx;
-//@ts-ignore
-getRollOutTx("0x777ADD3378B999235CCE77F71292DAC1E8095FFC").then((data) => {
-    console.log(data);
-});
-getClaimParams("0xbd6de6cf1cb7573a158d16be1261f925bfe24709cfea82338386ed83899e8633").then((data) => {
-    console.log(data);
-});

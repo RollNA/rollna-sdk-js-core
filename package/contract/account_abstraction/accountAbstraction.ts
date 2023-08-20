@@ -16,8 +16,8 @@ export class AccountAbstraction {
         }    
         this.sender = Sender;
     }
-    static getAAVersion(Sender: string, Signer?: string) {
-        var rollnaInfo = RollnaChainInfo.getRollNaInfo()
+    static async getAAVersion(Sender: string, Signer?: string) {
+        var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
 
         var contract = new Web3.eth.contract.Contract(AAAbi, Sender)
         contract.setProvider(rollnaInfo.rollnaProvider)
@@ -25,8 +25,8 @@ export class AccountAbstraction {
         return contract.methods.VERSION().call({from: Signer})
     }
 
-    static getProposalLength(Sender: string, Signer?: string) {
-        var rollnaInfo = RollnaChainInfo.getRollNaInfo()
+    static async getProposalLength(Sender: string, Signer?: string) {
+        var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
 
         var contract = new Web3.eth.contract.Contract(AAAbi, Sender)
         contract.setProvider(rollnaInfo.rollnaProvider)
@@ -34,8 +34,8 @@ export class AccountAbstraction {
         return contract.methods.proposalLength().call({from: Signer})
     }
 
-    static isAALocked(Sender: string, Signer?: string) {
-        var rollnaInfo = RollnaChainInfo.getRollNaInfo()
+    static async isAALocked(Sender: string, Signer?: string) {
+        var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
 
         var contract = new Web3.eth.contract.Contract(AAAbi, Sender)
         contract.setProvider(rollnaInfo.rollnaProvider)

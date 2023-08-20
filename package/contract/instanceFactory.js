@@ -21,7 +21,7 @@ class ContractInstanceFactory {
         let inner = await index_1.SupportedChainInfo.getChainInfo(chainId);
         if (inner != undefined) {
             let _routerAddr = inner.EthGatewayAddr;
-            let _rollOutAddr = index_1.EthRollOutAddr;
+            let _rollOutAddr = index_1.RollOutAddr;
             if (routerAddr != undefined) {
                 _routerAddr = routerAddr;
             }
@@ -42,7 +42,7 @@ class ContractInstanceFactory {
             if (routerAddr != undefined) {
                 _routerAddr = routerAddr;
             }
-            let _rollOutAddr = tokenInfo.rollOutRouterAddr;
+            let _rollOutAddr = index_1.RollOutAddr;
             if (rollOutAddr != undefined) {
                 _rollOutAddr = rollOutAddr;
             }
