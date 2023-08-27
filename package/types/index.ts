@@ -3,7 +3,7 @@ import { ErrorType } from "./ErrorType"
 import {updateLatestAAVersion} from "../utils/client/HttpsRpc"
 const rollnaInfoUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/rollna_info.json";
 const chainInfosUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/content.json";
-export const nodeInterfaceContractAddr = "0xfffffffff";
+export const nodeInterfaceContractAddr = "0x00000000000000000000000000000000000000C8";
 export const preComplieAddr = "0xfffffff";
 export const RollOutAddr = "0x0000000000000000000000000000000000000064";
 export const ArbSysAddr="0x0000000000000000000000000000000000000064"
@@ -49,6 +49,7 @@ export type RollnaInfo = {
     rollnaProvider: string;
     rollnaChainId: Numbers;
     rollnaTokenSymbols: string;
+    routerAddrs: Map<Numbers, string>;
 }
 
 export type supportedErc20Tokens = {
@@ -62,6 +63,8 @@ export type ChainInfo = {
     ContractInfos: Map<string, supportedErc20Tokens>;
     RouterAddr: string;
     EthGatewayAddr: string;
+    OutBox: string;
+    RollUp: string;
     ChainId: string;
 }
 
@@ -75,10 +78,17 @@ export class RollnaChainInfo {
             var infoJson = await ret.json()
             if (infoJson != undefined) {
                 if (infoJson.provider && infoJson.chainId && infoJson.symbol) {
+                    var rolloutAddrs = new Map<Numbers, string>()
+                    if (infoJson.rolloutGateways) {
+                        for (const v of infoJson.rolloutGateways) {
+                            rolloutAddrs.set(v.chainId, v.router)
+                        }
+                    }
                     var TempRollnaInfo : RollnaInfo = {
                         rollnaProvider: infoJson.provider,
                         rollnaChainId: infoJson.chainId,
-                        rollnaTokenSymbols: infoJson.symbol
+                        rollnaTokenSymbols: infoJson.symbol,
+                        routerAddrs: rolloutAddrs
                     }
                     RollnaChainInfo.rollnaInfo = TempRollnaInfo
                 }  
@@ -129,6 +139,9 @@ export class SupportedChainInfo {
                         ContractInfos: ContractInfos,
                         RouterAddr: v.ChainInfo.routerAddr,
                         EthGatewayAddr: v.ChainInfo.EthGatewayAddr,
+                        OutBox: v.ChainInfo.outbox,
+                        RollUp: v.ChainInfo.rollup,
+                        Provider: v.ChainInfo.provider,
                         ChainId: v.ChainInfo.chainId
                     }
                     chainInfo.ChainId = v.ChainInfo.chainId

@@ -9,6 +9,6 @@ export class NodeInterfaceContract {
         var contract = new web3.eth.contract.Contract(interfaceAbi, nodeInterfaceContractAddr)
         contract.setProvider(rollnaInfo?.rollnaProvider);
         //@ts-ignore
-        return contract.methods.constructOutboxProof(size, leaf).send()       
+        return contract.methods.constructOutboxProof(size, leaf).call()//.send({from: from})       
     }
 }

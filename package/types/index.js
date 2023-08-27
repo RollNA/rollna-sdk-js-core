@@ -1,13 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ProposalType = exports.RollOutAddr = exports.preComplieAddr = exports.nodeInterfaceContractAddr = void 0;
+exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ProposalType = exports.ArbSysAddr = exports.RollOutAddr = exports.preComplieAddr = exports.nodeInterfaceContractAddr = void 0;
 const ErrorType_1 = require("./ErrorType");
 const HttpsRpc_1 = require("../utils/client/HttpsRpc");
 const rollnaInfoUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/rollna_info.json";
 const chainInfosUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/content.json";
-exports.nodeInterfaceContractAddr = "0xfffffffff";
+exports.nodeInterfaceContractAddr = "0x00000000000000000000000000000000000000C8";
 exports.preComplieAddr = "0xfffffff";
 exports.RollOutAddr = "0x0000000000000000000000000000000000000064";
+exports.ArbSysAddr = "0x0000000000000000000000000000000000000064";
 var ProposalType;
 (function (ProposalType) {
     ProposalType[ProposalType["Lock"] = 0] = "Lock";
@@ -17,16 +18,24 @@ var ProposalType;
 class RollnaChainInfo {
     static rollnaInfo;
     static accountAbstractionTemplate;
+    // test done
     static async updateRollNaInfo() {
         var ret = await fetch(rollnaInfoUrl);
         if (ret.ok) {
             var infoJson = await ret.json();
             if (infoJson != undefined) {
                 if (infoJson.provider && infoJson.chainId && infoJson.symbol) {
+                    var rolloutAddrs = new Map();
+                    if (infoJson.rolloutGateways) {
+                        for (const v of infoJson.rolloutGateways) {
+                            rolloutAddrs.set(v.chainId, v.router);
+                        }
+                    }
                     var TempRollnaInfo = {
                         rollnaProvider: infoJson.provider,
                         rollnaChainId: infoJson.chainId,
-                        rollnaTokenSymbols: infoJson.symbol
+                        rollnaTokenSymbols: infoJson.symbol,
+                        routerAddrs: rolloutAddrs
                     };
                     RollnaChainInfo.rollnaInfo = TempRollnaInfo;
                 }
@@ -40,6 +49,7 @@ class RollnaChainInfo {
         }
         return ret;
     }
+    // test done
     static async getRollNaInfo() {
         if (!RollnaChainInfo.rollnaInfo) {
             await RollnaChainInfo.updateRollNaInfo();
@@ -51,7 +61,6 @@ class RollnaChainInfo {
     }
 }
 exports.RollnaChainInfo = RollnaChainInfo;
-RollnaChainInfo.getRollNaInfo().then((value) => { console.log(value); });
 class SupportedChainInfo {
     static ChainInfos;
     constructor() { }
@@ -76,6 +85,9 @@ class SupportedChainInfo {
                         ContractInfos: ContractInfos,
                         RouterAddr: v.ChainInfo.routerAddr,
                         EthGatewayAddr: v.ChainInfo.EthGatewayAddr,
+                        OutBox: v.ChainInfo.outbox,
+                        RollUp: v.ChainInfo.rollup,
+                        Provider: v.ChainInfo.provider,
                         ChainId: v.ChainInfo.chainId
                     };
                     chainInfo.ChainId = v.ChainInfo.chainId;

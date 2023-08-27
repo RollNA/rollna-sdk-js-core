@@ -1,4 +1,4 @@
-import { Numbers } from "web3";
+import { Bytes, Numbers } from "web3";
 export abstract class BaseContractInstance {
     protected rollInContractAddr: string;
     protected rollOutContractAddr: string;
@@ -13,7 +13,8 @@ export abstract class BaseContractInstance {
         refundTo?: string, 
         maxGas?: Numbers, 
         gasPriceBid?: Numbers, 
-        tokenAddr?: string
+        tokenAddr?: string,
+        data?: Bytes
     ) : string;
     abstract rollOut(
         To : string, 

@@ -6,12 +6,12 @@ import { Numbers } from "web3";
 
 export class NativeContractInstance extends BaseContractInstance {
     rollIn(lrTo : string) {
-        var contract = new Contract(rollInAbi);
+        var contract = new Contract(rollInAbi, this.rollInContractAddr);
         //@ts-ignore
         return contract.methods.rollinEth(lrTo).encodeABI();
     }
     rollOut(leTo : string, chainId : Numbers) {
-        var contract = new Contract(rollOutAbi);
+        var contract = new Contract(rollOutAbi, this.rollOutContractAddr);
         //@ts-ignore
         return contract.methods.withdrawEth(chainId, leTo).encodeABI()
     }

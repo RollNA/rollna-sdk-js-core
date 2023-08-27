@@ -29,6 +29,7 @@ export async function  updateLatestAAVersion() {
     }
 }
 
+// test done
 export async function getClaimParams(TxHash: string) {
     var ret =  await fetch(getClaimParamsUrl + "?txhash=" + TxHash)
     if (ret.ok) {
@@ -42,6 +43,7 @@ export async function getClaimParams(TxHash: string) {
     return ErrorType.HttpRpcFailed
 }
 
+// test done
 export async function getRollOutTx(sender: string) {
     var ret =  await fetch(getRollOutTxUrl + "?sender=" + sender)
     if (ret.ok) {

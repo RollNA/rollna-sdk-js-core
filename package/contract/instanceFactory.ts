@@ -2,7 +2,7 @@ import { Numbers } from "web3";
 import {BaseContractInstance} from "./baseRollUp"
 import {NativeContractInstance} from "./nativeRollUp"
 import {ERC20ContractInstance} from "./ERC20RollUp"
-import {SupportedChainInfo, RollOutAddr} from "../types/index"
+import {SupportedChainInfo, RollOutAddr, RollnaChainInfo} from "../types/index"
 
 export class ContractInstanceFactory {
     private  constructor() {}
@@ -34,15 +34,18 @@ export class ContractInstanceFactory {
         let inner = await SupportedChainInfo.getChainInfo(chainId)
         if (inner != undefined) {
                 let tokenInfo = inner.ContractInfos.get(tokenAddr)
-                if (tokenInfo == undefined) {
+                var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
+                if (tokenInfo == undefined || rollnaInfo == undefined) {
                     return
                 }
                 let _routerAddr = inner.RouterAddr    
-                
                 if (routerAddr != undefined) {
                     _routerAddr = routerAddr
                 }
-                let _rollOutAddr = RollOutAddr
+                let _rollOutAddr = rollnaInfo.routerAddrs.get(chainId)
+                if (_rollOutAddr == undefined) {
+                    return
+                }
                 if (rollOutAddr != undefined) {
                     _rollOutAddr = rollOutAddr
                 }

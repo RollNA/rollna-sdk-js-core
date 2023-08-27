@@ -35,14 +35,18 @@ class ContractInstanceFactory {
         let inner = await index_1.SupportedChainInfo.getChainInfo(chainId);
         if (inner != undefined) {
             let tokenInfo = inner.ContractInfos.get(tokenAddr);
-            if (tokenInfo == undefined) {
+            var rollnaInfo = await index_1.RollnaChainInfo.getRollNaInfo();
+            if (tokenInfo == undefined || rollnaInfo == undefined) {
                 return;
             }
             let _routerAddr = inner.RouterAddr;
             if (routerAddr != undefined) {
                 _routerAddr = routerAddr;
             }
-            let _rollOutAddr = index_1.RollOutAddr;
+            let _rollOutAddr = rollnaInfo.routerAddrs.get(chainId);
+            if (_rollOutAddr == undefined) {
+                return;
+            }
             if (rollOutAddr != undefined) {
                 _rollOutAddr = rollOutAddr;
             }

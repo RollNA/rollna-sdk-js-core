@@ -35,6 +35,7 @@ async function updateLatestAAVersion() {
     }
 }
 exports.updateLatestAAVersion = updateLatestAAVersion;
+// test done
 async function getClaimParams(TxHash) {
     var ret = await (0, node_fetch_1.default)(getClaimParamsUrl + "?txhash=" + TxHash);
     if (ret.ok) {
@@ -48,6 +49,7 @@ async function getClaimParams(TxHash) {
     return ErrorType_1.ErrorType.HttpRpcFailed;
 }
 exports.getClaimParams = getClaimParams;
+// test done
 async function getRollOutTx(sender) {
     var ret = await (0, node_fetch_1.default)(getRollOutTxUrl + "?sender=" + sender);
     if (ret.ok) {

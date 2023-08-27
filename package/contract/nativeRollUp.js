@@ -10,12 +10,12 @@ const ArbSys_json_1 = __importDefault(require("../abi/ArbSys.json"));
 const web3_eth_contract_1 = require("web3-eth-contract");
 class NativeContractInstance extends baseRollUp_1.BaseContractInstance {
     rollIn(lrTo) {
-        var contract = new web3_eth_contract_1.Contract(IInbox_json_1.default);
+        var contract = new web3_eth_contract_1.Contract(IInbox_json_1.default, this.rollInContractAddr);
         //@ts-ignore
         return contract.methods.rollinEth(lrTo).encodeABI();
     }
     rollOut(leTo, chainId) {
-        var contract = new web3_eth_contract_1.Contract(ArbSys_json_1.default);
+        var contract = new web3_eth_contract_1.Contract(ArbSys_json_1.default, this.rollOutContractAddr);
         //@ts-ignore
         return contract.methods.withdrawEth(chainId, leTo).encodeABI();
     }
