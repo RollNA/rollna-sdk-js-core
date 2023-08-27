@@ -92,6 +92,7 @@ async function test_formatRollOutERC20Input() {
         console.log(res);
     }
 }
+test_formatRollOutERC20Input();
 async function estimateRollInGasPrice(httpProvider, input) {
     var web3 = new Web3.Web3(httpProvider);
     return await web3.eth.estimateGas(input);
@@ -135,7 +136,6 @@ async function test_claim() {
     }
     let size = await index.getMerkleTreeState();
     let proof = await index.getRollOutProof(size, params.leaf);
-    console.log(proof);
     let input = await index.formatClaimTokenInput(proof, params.leaf, params.lrsender, params.to, params.lrBlock, params.l1Block, params.lrtimestamp, Web3.utils.toHex(Web3.utils.toBigInt(params.value)), params.data);
     var web3 = new Web3.Web3("ws://43.134.20.65:8346");
     web3.eth.accounts.wallet.add('0x0a4eb679dc5fcf150796fca0d0ebdf747ecf4bede66de4f5a7dd01042982f53f');
@@ -150,4 +150,3 @@ async function test_claim() {
         console.log(ret);
     }
 }
-test_claim();
