@@ -69,35 +69,6 @@ async function test_formatRollOutInput() {
     }
 }
 
-// test done
-export async function formatRollOutERC20Input(
-    fromAddr : string, 
-    toChainId: Numbers, 
-    amount: Numbers, 
-    tokenAddr: string,
-    destAddr: string,
-    gas: Numbers,
-    gasPrice: Numbers,
-    gateWayAddr?: string,
-    rollOutAddr?: string,
-    ) {
-        let toChainInfo = SupportedChainInfo.getChainInfo(toChainId)
-        if (toChainInfo != undefined) {
-            let contractInstance = await ContractInstanceFactory.getContractInstance(true, toChainId, tokenAddr, gateWayAddr, rollOutAddr);
-            if (contractInstance != undefined) {
-               let data = contractInstance.rollOut(destAddr, toChainId, amount, tokenAddr)
-               return {
-                   from: fromAddr,
-                   to: contractInstance.getRollOutContractAddr(),
-                   gas: gas,
-                   gasPrice: gasPrice,
-                   data: data
-               }
-            }
-        }
-        return ErrorType.FormatInputFailed
-}
-
 async function test_formatRollOutERC20Input() {
     let input = await index.formatRollOutERC20Input(
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
