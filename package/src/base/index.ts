@@ -11,7 +11,7 @@ import ArbAbi from "../../abi/ArbSys.json"
 import testMint from "../../abi/testErc20.json"
 import { ArbSysAddr } from "../../types/";
 import rollInAbi from "../../abi/IL1GatewayRouter.json"
-import { getRollOutTx, getClaimParams } from "../../utils/client/HttpsRpc"
+import { getRollOutTx, getClaimParams, getConfirmBlock } from "../../utils/client/HttpsRpc"
 import rollUpAbi from "../../abi/Rollup.json"
 
 // test done
@@ -164,13 +164,13 @@ export async function getRollnaInfo() {
 }
 
 //test done
-export async function getMerkleTreeState(): Promise<any> {
+export async function getMerkleTreeState(block_num: Numbers | undefined): Promise<any> {
     var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
 
     var contract = new Web3.eth.contract.Contract(ArbAbi, ArbSysAddr)
     contract.setProvider(rollnaInfo.rollnaProvider)
     //@ts-ignore
-    var ret = await contract.methods.sendMerkleTreeState().call()
+    var ret = await contract.methods.sendMerkleTreeState().call({}, block_num)
     //@ts-ignore
     return Number(ret["size"])
 }
@@ -179,11 +179,28 @@ export async function getMerkleTreeState(): Promise<any> {
 export async function getRollOutProof(size: Numbers, leaf: Numbers) : Promise<any> {
     let raw_arr =  await NodeInterfaceContract.getProof(size, leaf)
     let ret_arr = []
-    console.log(raw_arr)
     for (const v of raw_arr.proof) {
         ret_arr.push(Web3.utils.hexToBytes(v))
     }
     return ret_arr
+}
+
+export async function getLatestConfirmBlock(chainId: Numbers) {
+    var chainInfo = await SupportedChainInfo.getChainInfo(chainId)
+    if (chainInfo) {
+        var contract = new Web3.eth.contract.Contract(rollUpAbi, chainInfo.RollUp);
+        contract.setProvider(chainInfo.Provider)
+        var block_num = await contract.methods.latestConfirmed().call()
+        if (block_num) {
+            //@ts-ignore
+            var confirmdata = await contract.methods.getNode(block_num).call()
+            if (confirmdata) {
+                //@ts-ignore
+                return getConfirmBlock(confirmdata.confirmData)
+            }
+        }
+    }
+    return undefined
 }
 
 export function formatClaimTokenInput(
@@ -198,7 +215,6 @@ export function formatClaimTokenInput(
     data: Bytes,
     ) {
     var contract = new Web3.eth.contract.Contract(claimAbi)
-    console.log(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value, data)
     //@ts-ignore
     return contract.methods.executeTransaction(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value, data).encodeABI()       
 }

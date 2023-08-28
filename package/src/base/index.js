@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatUpgradeAAInput = exports.formatAACallContractInput = exports.formatAATransferInput = exports.formatAARolloutErc20Input = exports.formatAARolloutInput = exports.formatSubmitProposalInput = exports.formatRemoveGuardiansInput = exports.formatAddGuardiansInput = exports.formatSetValidatorInput = exports.formatRecoverInput = exports.formatUnlockInput = exports.formatLockInput = exports.formatAccountAbstractionFromAAInput = exports.formatAccountAbstractionInput = exports.isAALocked = exports.getProposalLength = exports.getAAVersion = exports.formatClaimTokenInput = exports.getRollOutProof = exports.getMerkleTreeState = exports.getRollnaInfo = exports.estimateRollInGasPrice = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
+exports.formatUpgradeAAInput = exports.formatAACallContractInput = exports.formatAATransferInput = exports.formatAARolloutErc20Input = exports.formatAARolloutInput = exports.formatSubmitProposalInput = exports.formatRemoveGuardiansInput = exports.formatAddGuardiansInput = exports.formatSetValidatorInput = exports.formatRecoverInput = exports.formatUnlockInput = exports.formatLockInput = exports.formatAccountAbstractionFromAAInput = exports.formatAccountAbstractionInput = exports.isAALocked = exports.getProposalLength = exports.getAAVersion = exports.formatClaimTokenInput = exports.getLatestConfirmBlock = exports.getRollOutProof = exports.getMerkleTreeState = exports.getRollnaInfo = exports.estimateRollInGasPrice = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
 const Web3 = __importStar(require("web3"));
 const ErrorType_1 = require("../../types/ErrorType");
 const types_1 = require("../../types");
@@ -38,6 +38,8 @@ const IOutbox_json_1 = __importDefault(require("../../abi/IOutbox.json"));
 const ArbSys_json_1 = __importDefault(require("../../abi/ArbSys.json"));
 const types_2 = require("../../types/");
 const IL1GatewayRouter_json_1 = __importDefault(require("../../abi/IL1GatewayRouter.json"));
+const HttpsRpc_2 = require("../../utils/client/HttpsRpc");
+const Rollup_json_1 = __importDefault(require("../../abi/Rollup.json"));
 // test done
 async function formatRollInInput(fromAddr, fromChainId, amount, destAddr, gas, gasPrice, gateWayAddr, rollOutAddr) {
     let fromChainInfo = types_1.SupportedChainInfo.getChainInfo(fromChainId);
@@ -145,12 +147,12 @@ async function getRollnaInfo() {
 }
 exports.getRollnaInfo = getRollnaInfo;
 //test done
-async function getMerkleTreeState() {
+async function getMerkleTreeState(block_num) {
     var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
     var contract = new Web3.eth.contract.Contract(ArbSys_json_1.default, types_2.ArbSysAddr);
     contract.setProvider(rollnaInfo.rollnaProvider);
     //@ts-ignore
-    var ret = await contract.methods.sendMerkleTreeState().call();
+    var ret = await contract.methods.sendMerkleTreeState().call({}, block_num);
     //@ts-ignore
     return Number(ret["size"]);
 }
@@ -166,6 +168,24 @@ async function getRollOutProof(size, leaf) {
     return ret_arr;
 }
 exports.getRollOutProof = getRollOutProof;
+async function getLatestConfirmBlock(chainId) {
+    var chainInfo = await types_1.SupportedChainInfo.getChainInfo(chainId);
+    if (chainInfo) {
+        var contract = new Web3.eth.contract.Contract(Rollup_json_1.default, chainInfo.RollUp);
+        contract.setProvider(chainInfo.Provider);
+        var block_num = await contract.methods.latestConfirmed().call();
+        if (block_num) {
+            //@ts-ignore
+            var confirmdata = await contract.methods.getNode(block_num).call();
+            if (confirmdata) {
+                //@ts-ignore
+                return (0, HttpsRpc_2.getConfirmBlock)(confirmdata.confirmData);
+            }
+        }
+    }
+    return undefined;
+}
+exports.getLatestConfirmBlock = getLatestConfirmBlock;
 function formatClaimTokenInput(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value, data) {
     var contract = new Web3.eth.contract.Contract(IOutbox_json_1.default);
     console.log(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value, data);

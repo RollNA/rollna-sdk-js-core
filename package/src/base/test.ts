@@ -93,7 +93,8 @@ async function test_claim() {
     if (params.data == '') {
         params.data = []
     }
-    let size = await index.getMerkleTreeState()
+    var block_num = await index.getLatestConfirmBlock(params.chainId)
+    let size = await index.getMerkleTreeState(block_num)
     let proof = await index.getRollOutProof(size, params.leaf)
     let input = await index.formatClaimTokenInput(
         proof,
@@ -115,8 +116,10 @@ async function test_claim() {
             from: "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
             to: toChainInfo.OutBox,
             data: input,
-            gasLimit: 5000000,
+            gasLimit: 500000,
         })
         console.log(ret)
     }
 }
+
+test_claim()
