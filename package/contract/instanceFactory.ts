@@ -38,7 +38,7 @@ export class ContractInstanceFactory {
                 if (tokenInfo == undefined || rollnaInfo == undefined) {
                     return
                 }
-                let _routerAddr = inner.RouterAddr    
+                let _routerAddr = inner.RouterAddr   
                 if (routerAddr != undefined) {
                     _routerAddr = routerAddr
                 }

@@ -11,8 +11,11 @@ import ArbAbi from "../../abi/ArbSys.json"
 import testMint from "../../abi/testErc20.json"
 import { ArbSysAddr } from "../../types/";
 import rollInAbi from "../../abi/IL1GatewayRouter.json"
+import L2Router from "../../abi/L2router.json"
+import L2Gateway from "../../abi/L2GatewayRouter.json"
 import { getRollOutTx, getClaimParams, getConfirmBlock } from "../../utils/client/HttpsRpc"
 import rollUpAbi from "../../abi/Rollup.json"
+import { toNumber } from "ethers";
 
 // test done
 export async function formatRollInInput(
@@ -60,10 +63,8 @@ export async function formatRollInERC20Input(
         let fromChainInfo = await SupportedChainInfo.getChainInfo(fromChainId)
         if (fromChainInfo != undefined) {
             let contractInstance = await ContractInstanceFactory.getContractInstance(true, fromChainId, tokenAddr, gateWayAddr, rollOutAddr);
-            
             if (contractInstance != undefined) {
                var contract = new Web3.eth.contract.Contract(rollInAbi, contractInstance.getRollInContractAddr());
-                
                var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
                contract.setProvider(fromChainInfo.Provider)
                //@ts-ignore
@@ -76,6 +77,9 @@ export async function formatRollInERC20Input(
                let block = await Web3.eth.getBlock(web3Context)
                //@ts-ignore
                var basefee_num = BigInt(Web3.utils.hexToNumber(block.baseFeePerGas))
+               if (fromChainId == 1338) {
+                   basefee_num = BigInt(15000000000)
+               }
                let maxSubmissionCost = basefee_num * BigInt(((outboundCalldata.length - 2) * 3 + 1400))
                let inner_data = Web3.eth.abi.encodeParameters(['uint256', 'bytes'], [maxSubmissionCost, []]);
                let data = contractInstance.rollIn(destAddr, fromAddr, amount, reFundTo, gas, gasPrice, tokenAddr, inner_data)
@@ -86,6 +90,7 @@ export async function formatRollInERC20Input(
                    gasPrice: gasPrice,
                    data: data,
                    value: value,
+                   gasLimit: "0xfffff"
                }
             }
         }
@@ -174,7 +179,6 @@ export async function getMerkleTreeState(block_num: Numbers | undefined): Promis
     //@ts-ignore
     return Number(ret["size"])
 }
-
 // test done
 export async function getRollOutProof(size: Numbers, leaf: Numbers) : Promise<any> {
     let raw_arr =  await NodeInterfaceContract.getProof(size, leaf)
@@ -185,15 +189,43 @@ export async function getRollOutProof(size: Numbers, leaf: Numbers) : Promise<an
     return ret_arr
 }
 
+export async function getDestChainId(gateway: string, is_erc20: boolean, txhash?: string) {
+    var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
+    if (is_erc20) {
+        var contract = new Web3.eth.contract.Contract(L2Gateway, gateway)
+        contract.setProvider(rollnaInfo.rollnaProvider)
+        //@ts-ignore
+        var router_addr = await contract.methods.router().call()
+        //@ts-ignore
+        var contract = new Web3.eth.contract.Contract(L2Router, router_addr)
+        contract.setProvider(rollnaInfo.rollnaProvider)
+        //@ts-ignore
+        var big_num = await contract.methods.counterpartChainID().call()
+        //@ts-ignore
+        return toNumber(big_num)
+    } else {
+        if (txhash) {
+            var web3 = new Web3.Web3(rollnaInfo.rollnaProvider)
+            var tx = await web3.eth.getTransaction(txhash)
+            if (tx.data) {
+                var raw_chain_id = "0x" + tx.data.slice(10, 74)
+                return Web3.utils.hexToNumber(raw_chain_id)
+            }
+        }
+    }
+}
+
 export async function getLatestConfirmBlock(chainId: Numbers) {
     var chainInfo = await SupportedChainInfo.getChainInfo(chainId)
     if (chainInfo) {
         var contract = new Web3.eth.contract.Contract(rollUpAbi, chainInfo.RollUp);
         contract.setProvider(chainInfo.Provider)
         var block_num = await contract.methods.latestConfirmed().call()
+        console.log(block_num)
         if (block_num) {
             //@ts-ignore
             var confirmdata = await contract.methods.getNode(block_num).call()
+            console.log(confirmdata)
             if (confirmdata) {
                 //@ts-ignore
                 return getConfirmBlock(confirmdata.confirmData)
