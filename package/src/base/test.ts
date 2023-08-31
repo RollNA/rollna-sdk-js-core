@@ -34,7 +34,7 @@ async function test_formatRollInInput() {
 }
 
 async function test_formatRollInERC20Input() {
-    let estimate_fee = await index.estimateRollInErc20gas(
+    let estimate_fee = await index.estimateRollInErc20fee(
         1337, 
         "0x37e6C8116B9f735b469B64Ee59b6464025Db6C31", 
         5000000, 
@@ -163,7 +163,7 @@ async function test_le_formatRollInInput() {
 }
 
 async function test_le_formatRollInERC20Input() {
-    let estimate_fee = await index.estimateRollInErc20gas(
+    let estimate_fee = await index.estimateRollInErc20fee(
         1338, 
         "0x57a3e28f18e2Dd24B648982836aEC4d618d3494F", 
         500000, 
@@ -276,7 +276,7 @@ async function test_le_claim() {
 }
 
 async function test_estimateRollInErc20gas() {
-    let estimate_fee = await index.estimateRollInErc20gas(
+    let estimate_fee = await index.estimateRollInErc20fee(
         1337, 
         "0x37e6C8116B9f735b469B64Ee59b6464025Db6C31", 
         500000, 

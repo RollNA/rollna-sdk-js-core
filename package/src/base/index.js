@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatUpgradeAAInput = exports.formatAACallContractInput = exports.formatAATransferInput = exports.formatAARolloutErc20Input = exports.formatAARolloutInput = exports.formatSubmitProposalInput = exports.formatRemoveGuardiansInput = exports.formatAddGuardiansInput = exports.formatSetValidatorInput = exports.formatRecoverInput = exports.formatUnlockInput = exports.formatLockInput = exports.formatAccountAbstractionFromAAInput = exports.formatAccountAbstractionInput = exports.isAALocked = exports.getProposalLength = exports.getAAVersion = exports.formatClaimTokenInput = exports.getLatestConfirmBlock = exports.getDestChainId = exports.getRollOutProof = exports.getMerkleTreeState = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.estimateRollInErc20gas = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
+exports.formatUpgradeAAInput = exports.formatAACallContractInput = exports.formatAATransferInput = exports.formatAARolloutErc20Input = exports.formatAARolloutInput = exports.formatSubmitProposalInput = exports.formatRemoveGuardiansInput = exports.formatAddGuardiansInput = exports.formatSetValidatorInput = exports.formatRecoverInput = exports.formatUnlockInput = exports.formatLockInput = exports.formatAccountAbstractionFromAAInput = exports.formatAccountAbstractionInput = exports.isAALocked = exports.getProposalLength = exports.getAAVersion = exports.formatClaimTokenInput = exports.getLatestConfirmBlock = exports.getDestChainId = exports.getRollOutProof = exports.getMerkleTreeState = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.estimateRollInErc20fee = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
 const Web3 = __importStar(require("web3"));
 const ErrorType_1 = require("../../types/ErrorType");
 const types_1 = require("../../types");
@@ -102,7 +102,7 @@ async function formatRollInERC20Input(fromAddr, fromChainId, amount, tokenAddr, 
     return ErrorType_1.ErrorType.FormatInputFailed;
 }
 exports.formatRollInERC20Input = formatRollInERC20Input;
-async function estimateRollInErc20gas(chainId, tokenAddr, gas, fromAddr, destAddr, amount) {
+async function estimateRollInErc20fee(chainId, tokenAddr, gas, fromAddr, destAddr, amount) {
     let fromChainInfo = await types_1.SupportedChainInfo.getChainInfo(chainId);
     if (fromChainInfo != undefined) {
         let contractInstance = await instanceFactory_1.ContractInstanceFactory.getContractInstance(true, chainId, tokenAddr);
@@ -133,7 +133,7 @@ async function estimateRollInErc20gas(chainId, tokenAddr, gas, fromAddr, destAdd
     }
     return ErrorType_1.ErrorType.FormatInputFailed;
 }
-exports.estimateRollInErc20gas = estimateRollInErc20gas;
+exports.estimateRollInErc20fee = estimateRollInErc20fee;
 // test done
 async function formatRollOutInput(fromAddr, toChainId, amount, destAddr, gas, gasPrice, gateWayAddr, rollOutAddr) {
     let toChainInfo = types_1.SupportedChainInfo.getChainInfo(toChainId);

@@ -97,7 +97,7 @@ export async function formatRollInERC20Input(
         return ErrorType.FormatInputFailed
 }
 
-export async function estimateRollInErc20gas(chainId: Numbers, tokenAddr: string, gas: Numbers, fromAddr: string, destAddr: string, amount: Numbers) {
+export async function estimateRollInErc20fee(chainId: Numbers, tokenAddr: string, gas: Numbers, fromAddr: string, destAddr: string, amount: Numbers) {
     let fromChainInfo = await SupportedChainInfo.getChainInfo(chainId)
     if (fromChainInfo != undefined) {
         let contractInstance = await ContractInstanceFactory.getContractInstance(true, chainId, tokenAddr)
