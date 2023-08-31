@@ -126,7 +126,7 @@ async function estimateRollInErc20fee(chainId, tokenAddr, gas, fromAddr, destAdd
             let maxSubmissionCost = basefee_num * BigInt(((outboundCalldata.length - 2) * 3 + 1400));
             let value = maxSubmissionCost + basefee_num * BigInt(gas);
             return {
-                basefee: basefee_num,
+                gasPrice: basefee_num,
                 value: value
             };
         }

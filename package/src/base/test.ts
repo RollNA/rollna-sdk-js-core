@@ -53,7 +53,7 @@ async function test_formatRollInERC20Input() {
         "0x37e6C8116B9f735b469B64Ee59b6464025Db6C31",
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         5000000,
-        estimate_fee.basefee,
+        estimate_fee.gasPrice,
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         estimate_fee.value,
     )
@@ -182,7 +182,7 @@ async function test_le_formatRollInERC20Input() {
         "0x57a3e28f18e2Dd24B648982836aEC4d618d3494F",
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         500000,
-        estimate_fee.basefee,
+        estimate_fee.gasPrice,
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         estimate_fee.value,
     )
