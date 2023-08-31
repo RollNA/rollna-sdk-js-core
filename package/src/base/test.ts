@@ -45,7 +45,6 @@ async function test_formatRollInERC20Input() {
     if (estimate_fee == ErrorType.FormatInputFailed) {
         return
     }
-    console.log(estimate_fee)
     let input = await index.formatRollInERC20Input(
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         1337,
@@ -174,7 +173,6 @@ async function test_le_formatRollInERC20Input() {
     if (estimate_fee == ErrorType.FormatInputFailed) {
         return
     }
-    console.log(estimate_fee)
     let input = await index.formatRollInERC20Input(
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         1338,
