@@ -97,6 +97,38 @@ export async function formatRollInERC20Input(
         return ErrorType.FormatInputFailed
 }
 
+export async function estimateRollInErc20gas(chainId: Numbers, tokenAddr: string, gas: Numbers, fromAddr: string, destAddr: string, amount: Numbers) {
+    let fromChainInfo = await SupportedChainInfo.getChainInfo(chainId)
+    if (fromChainInfo != undefined) {
+        let contractInstance = await ContractInstanceFactory.getContractInstance(true, chainId, tokenAddr)
+        if (contractInstance != undefined) {
+            var contract = new Web3.eth.contract.Contract(rollInAbi, contractInstance.getRollInContractAddr());
+               var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
+               contract.setProvider(fromChainInfo.Provider)
+               //@ts-ignore
+               let outboundCalldata = await contract.methods.getOutboundCalldata(tokenAddr, fromAddr, destAddr, amount, []).call()
+               if (!outboundCalldata) {
+                return ErrorType.FormatInputFailed
+               }
+               const web3Context = new Web3.Web3Context(rollnaInfo.rollnaProvider);
+               //@ts-ignore
+               let block = await Web3.eth.getBlock(web3Context)
+               //@ts-ignore
+               var basefee_num = BigInt(Web3.utils.hexToNumber(block.baseFeePerGas))
+               if (chainId == 1338) {
+                   basefee_num = BigInt(15000000000)
+               }
+               let maxSubmissionCost = basefee_num * BigInt(((outboundCalldata.length - 2) * 3 + 1400))
+               let value = maxSubmissionCost + basefee_num * BigInt(gas)
+               return {
+                   basefee: basefee_num,
+                   value: value
+               }
+        }
+    }
+    return ErrorType.FormatInputFailed
+}
+
 // test done
 export async function formatRollOutInput(
     fromAddr : string, 
@@ -156,18 +188,6 @@ export async function formatRollOutERC20Input(
         return ErrorType.FormatInputFailed
 }
 
-export async function estimateRollInGasPrice(httpProvider: string, input: CommonInput) : Promise<Numbers> {
-    var web3 = new Web3.Web3(httpProvider)
-    return await web3.eth.estimateGas(input)
-    // need gasfee in LR
-    // (TODO:mingxuan)need further design with saitama and jessica
-}
-
-// test done
-export async function getRollnaInfo() {
-    return await RollnaChainInfo.getRollNaInfo()
-}
-
 //test done
 export async function getMerkleTreeState(block_num: Numbers | undefined): Promise<any> {
     var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
@@ -189,20 +209,22 @@ export async function getRollOutProof(size: Numbers, leaf: Numbers) : Promise<an
     return ret_arr
 }
 
-export async function getDestChainId(gateway: string, is_erc20: boolean, txhash?: string) {
+export async function getDestChainId(is_erc20: boolean, gateway?: string, txhash?: string) {
     var rollnaInfo = await RollnaChainInfo.getRollNaInfo()
     if (is_erc20) {
-        var contract = new Web3.eth.contract.Contract(L2Gateway, gateway)
-        contract.setProvider(rollnaInfo.rollnaProvider)
-        //@ts-ignore
-        var router_addr = await contract.methods.router().call()
-        //@ts-ignore
-        var contract = new Web3.eth.contract.Contract(L2Router, router_addr)
-        contract.setProvider(rollnaInfo.rollnaProvider)
-        //@ts-ignore
-        var big_num = await contract.methods.counterpartChainID().call()
-        //@ts-ignore
-        return toNumber(big_num)
+            if (gateway) {
+            var contract = new Web3.eth.contract.Contract(L2Gateway, gateway)
+            contract.setProvider(rollnaInfo.rollnaProvider)
+            //@ts-ignore
+            var router_addr = await contract.methods.router().call()
+            //@ts-ignore
+            var contract = new Web3.eth.contract.Contract(L2Router, router_addr)
+            contract.setProvider(rollnaInfo.rollnaProvider)
+            //@ts-ignore
+            var big_num = await contract.methods.counterpartChainID().call()
+            //@ts-ignore
+            return toNumber(big_num)
+        }
     } else {
         if (txhash) {
             var web3 = new Web3.Web3(rollnaInfo.rollnaProvider)
@@ -221,11 +243,9 @@ export async function getLatestConfirmBlock(chainId: Numbers) {
         var contract = new Web3.eth.contract.Contract(rollUpAbi, chainInfo.RollUp);
         contract.setProvider(chainInfo.Provider)
         var block_num = await contract.methods.latestConfirmed().call()
-        console.log(block_num)
         if (block_num) {
             //@ts-ignore
             var confirmdata = await contract.methods.getNode(block_num).call()
-            console.log(confirmdata)
             if (confirmdata) {
                 //@ts-ignore
                 return getConfirmBlock(confirmdata.confirmData)

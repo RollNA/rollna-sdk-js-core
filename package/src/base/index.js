@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatUpgradeAAInput = exports.formatAACallContractInput = exports.formatAATransferInput = exports.formatAARolloutErc20Input = exports.formatAARolloutInput = exports.formatSubmitProposalInput = exports.formatRemoveGuardiansInput = exports.formatAddGuardiansInput = exports.formatSetValidatorInput = exports.formatRecoverInput = exports.formatUnlockInput = exports.formatLockInput = exports.formatAccountAbstractionFromAAInput = exports.formatAccountAbstractionInput = exports.isAALocked = exports.getProposalLength = exports.getAAVersion = exports.formatClaimTokenInput = exports.getLatestConfirmBlock = exports.getDestChainId = exports.getRollOutProof = exports.getMerkleTreeState = exports.getRollnaInfo = exports.estimateRollInGasPrice = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
+exports.formatUpgradeAAInput = exports.formatAACallContractInput = exports.formatAATransferInput = exports.formatAARolloutErc20Input = exports.formatAARolloutInput = exports.formatSubmitProposalInput = exports.formatRemoveGuardiansInput = exports.formatAddGuardiansInput = exports.formatSetValidatorInput = exports.formatRecoverInput = exports.formatUnlockInput = exports.formatLockInput = exports.formatAccountAbstractionFromAAInput = exports.formatAccountAbstractionInput = exports.isAALocked = exports.getProposalLength = exports.getAAVersion = exports.formatClaimTokenInput = exports.getLatestConfirmBlock = exports.getDestChainId = exports.getRollOutProof = exports.getMerkleTreeState = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.estimateRollInErc20gas = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
 const Web3 = __importStar(require("web3"));
 const ErrorType_1 = require("../../types/ErrorType");
 const types_1 = require("../../types");
@@ -102,6 +102,38 @@ async function formatRollInERC20Input(fromAddr, fromChainId, amount, tokenAddr, 
     return ErrorType_1.ErrorType.FormatInputFailed;
 }
 exports.formatRollInERC20Input = formatRollInERC20Input;
+async function estimateRollInErc20gas(chainId, tokenAddr, gas, fromAddr, destAddr, amount) {
+    let fromChainInfo = await types_1.SupportedChainInfo.getChainInfo(chainId);
+    if (fromChainInfo != undefined) {
+        let contractInstance = await instanceFactory_1.ContractInstanceFactory.getContractInstance(true, chainId, tokenAddr);
+        if (contractInstance != undefined) {
+            var contract = new Web3.eth.contract.Contract(IL1GatewayRouter_json_1.default, contractInstance.getRollInContractAddr());
+            var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
+            contract.setProvider(fromChainInfo.Provider);
+            //@ts-ignore
+            let outboundCalldata = await contract.methods.getOutboundCalldata(tokenAddr, fromAddr, destAddr, amount, []).call();
+            if (!outboundCalldata) {
+                return ErrorType_1.ErrorType.FormatInputFailed;
+            }
+            const web3Context = new Web3.Web3Context(rollnaInfo.rollnaProvider);
+            //@ts-ignore
+            let block = await Web3.eth.getBlock(web3Context);
+            //@ts-ignore
+            var basefee_num = BigInt(Web3.utils.hexToNumber(block.baseFeePerGas));
+            if (chainId == 1338) {
+                basefee_num = BigInt(15000000000);
+            }
+            let maxSubmissionCost = basefee_num * BigInt(((outboundCalldata.length - 2) * 3 + 1400));
+            let value = maxSubmissionCost + basefee_num * BigInt(gas);
+            return {
+                basefee: basefee_num,
+                value: value
+            };
+        }
+    }
+    return ErrorType_1.ErrorType.FormatInputFailed;
+}
+exports.estimateRollInErc20gas = estimateRollInErc20gas;
 // test done
 async function formatRollOutInput(fromAddr, toChainId, amount, destAddr, gas, gasPrice, gateWayAddr, rollOutAddr) {
     let toChainInfo = types_1.SupportedChainInfo.getChainInfo(toChainId);
@@ -141,18 +173,6 @@ async function formatRollOutERC20Input(fromAddr, toChainId, amount, tokenAddr, d
     return ErrorType_1.ErrorType.FormatInputFailed;
 }
 exports.formatRollOutERC20Input = formatRollOutERC20Input;
-async function estimateRollInGasPrice(httpProvider, input) {
-    var web3 = new Web3.Web3(httpProvider);
-    return await web3.eth.estimateGas(input);
-    // need gasfee in LR
-    // (TODO:mingxuan)need further design with saitama and jessica
-}
-exports.estimateRollInGasPrice = estimateRollInGasPrice;
-// test done
-async function getRollnaInfo() {
-    return await types_1.RollnaChainInfo.getRollNaInfo();
-}
-exports.getRollnaInfo = getRollnaInfo;
 //test done
 async function getMerkleTreeState(block_num) {
     var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
@@ -174,20 +194,22 @@ async function getRollOutProof(size, leaf) {
     return ret_arr;
 }
 exports.getRollOutProof = getRollOutProof;
-async function getDestChainId(gateway, is_erc20, txhash) {
+async function getDestChainId(is_erc20, gateway, txhash) {
     var rollnaInfo = await types_1.RollnaChainInfo.getRollNaInfo();
     if (is_erc20) {
-        var contract = new Web3.eth.contract.Contract(L2GatewayRouter_json_1.default, gateway);
-        contract.setProvider(rollnaInfo.rollnaProvider);
-        //@ts-ignore
-        var router_addr = await contract.methods.router().call();
-        //@ts-ignore
-        var contract = new Web3.eth.contract.Contract(L2router_json_1.default, router_addr);
-        contract.setProvider(rollnaInfo.rollnaProvider);
-        //@ts-ignore
-        var big_num = await contract.methods.counterpartChainID().call();
-        //@ts-ignore
-        return (0, ethers_1.toNumber)(big_num);
+        if (gateway) {
+            var contract = new Web3.eth.contract.Contract(L2GatewayRouter_json_1.default, gateway);
+            contract.setProvider(rollnaInfo.rollnaProvider);
+            //@ts-ignore
+            var router_addr = await contract.methods.router().call();
+            //@ts-ignore
+            var contract = new Web3.eth.contract.Contract(L2router_json_1.default, router_addr);
+            contract.setProvider(rollnaInfo.rollnaProvider);
+            //@ts-ignore
+            var big_num = await contract.methods.counterpartChainID().call();
+            //@ts-ignore
+            return (0, ethers_1.toNumber)(big_num);
+        }
     }
     else {
         if (txhash) {
@@ -207,11 +229,9 @@ async function getLatestConfirmBlock(chainId) {
         var contract = new Web3.eth.contract.Contract(Rollup_json_1.default, chainInfo.RollUp);
         contract.setProvider(chainInfo.Provider);
         var block_num = await contract.methods.latestConfirmed().call();
-        console.log(block_num);
         if (block_num) {
             //@ts-ignore
             var confirmdata = await contract.methods.getNode(block_num).call();
-            console.log(confirmdata);
             if (confirmdata) {
                 //@ts-ignore
                 return (0, HttpsRpc_2.getConfirmBlock)(confirmdata.confirmData);

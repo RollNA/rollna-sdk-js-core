@@ -34,6 +34,18 @@ async function test_formatRollInInput() {
 }
 
 async function test_formatRollInERC20Input() {
+    let estimate_fee = await index.estimateRollInErc20gas(
+        1337, 
+        "0x37e6C8116B9f735b469B64Ee59b6464025Db6C31", 
+        5000000, 
+        "0x777aDd3378b999235cce77F71292dAc1E8095FFC", 
+        "0x777aDd3378b999235cce77F71292dAc1E8095FFC", 
+        "0xffffffffffffff"
+    )
+    if (estimate_fee == ErrorType.FormatInputFailed) {
+        return
+    }
+    console.log(estimate_fee)
     let input = await index.formatRollInERC20Input(
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         1337,
@@ -41,9 +53,9 @@ async function test_formatRollInERC20Input() {
         "0x37e6C8116B9f735b469B64Ee59b6464025Db6C31",
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         5000000,
-        100000000,
+        estimate_fee.basefee,
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
-        500584000000000,
+        estimate_fee.value,
     )
     if (input != ErrorType.FormatInputFailed) {
         let web3 = new Web3.Web3("ws://43.134.20.65:8346")
@@ -97,9 +109,9 @@ async function test_claim() {
     if (params.data == '') {
         params.data = []
         //@ts-ignore
-        toChainId = await index.getDestChainId(params.lrsender, false, params.txHash)
+        toChainId = await index.getDestChainId(false, params.lrsender, params.txHash)
     } else {
-        toChainId = await index.getDestChainId(params.lrsender, true)
+        toChainId = await index.getDestChainId(true, params.lrsender)
     }
     //@ts-ignore
     var block_num = await index.getLatestConfirmBlock(toChainId)
@@ -151,6 +163,18 @@ async function test_le_formatRollInInput() {
 }
 
 async function test_le_formatRollInERC20Input() {
+    let estimate_fee = await index.estimateRollInErc20gas(
+        1338, 
+        "0x57a3e28f18e2Dd24B648982836aEC4d618d3494F", 
+        500000, 
+        "0x777aDd3378b999235cce77F71292dAc1E8095FFC", 
+        "0x777aDd3378b999235cce77F71292dAc1E8095FFC", 
+        "0xffffffffff"
+    )
+    if (estimate_fee == ErrorType.FormatInputFailed) {
+        return
+    }
+    console.log(estimate_fee)
     let input = await index.formatRollInERC20Input(
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         1338,
@@ -158,9 +182,9 @@ async function test_le_formatRollInERC20Input() {
         "0x57a3e28f18e2Dd24B648982836aEC4d618d3494F",
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
         500000,
-        15000000000,
+        estimate_fee.basefee,
         "0x777aDd3378b999235cce77F71292dAc1E8095FFC",
-        7587600000000000,
+        estimate_fee.value,
     )
     if (input != ErrorType.FormatInputFailed) {
         let web3 = new Web3.Web3("ws://43.134.20.65:8646")
@@ -215,9 +239,9 @@ async function test_le_claim() {
     if (params.data == '') {
         params.data = []
         //@ts-ignore
-        toChainId = await index.getDestChainId(params.lrsender, false, params.txHash)
+        toChainId = await index.getDestChainId(false, params.lrsender, params.txHash)
     } else {
-        toChainId = await index.getDestChainId(params.lrsender, true)
+        toChainId = await index.getDestChainId(true, params.lrsender)
     }
 
     //@ts-ignore
@@ -251,3 +275,14 @@ async function test_le_claim() {
     }
 }
 
+async function test_estimateRollInErc20gas() {
+    let estimate_fee = await index.estimateRollInErc20gas(
+        1337, 
+        "0x37e6C8116B9f735b469B64Ee59b6464025Db6C31", 
+        500000, 
+        "0x777aDd3378b999235cce77F71292dAc1E8095FFC", 
+        "0x777aDd3378b999235cce77F71292dAc1E8095FFC", 
+        "0xffffffffffffff"
+    )
+    console.log(estimate_fee)
+}
