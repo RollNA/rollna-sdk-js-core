@@ -1,8 +1,8 @@
 import { Numbers } from "web3";
 import { ErrorType } from "./ErrorType"
 import {updateLatestAAVersion} from "../utils/client/HttpsRpc"
-const rollnaInfoUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/rollna_info.json";
-const chainInfosUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/content.json";
+const rollnaInfoUrl = "http://127.0.0.1:8331/config/getRollnaInfo";
+const chainInfosUrl = "http://127.0.0.1:8331/config/getChainsInfo";
 export const nodeInterfaceContractAddr = "0x00000000000000000000000000000000000000C8";
 export const preComplieAddr = "0xfffffff";
 export const RollOutAddr = "0x0000000000000000000000000000000000000064";
@@ -77,6 +77,7 @@ export class RollnaChainInfo {
         if (ret.ok) {
             var infoJson = await ret.json()
             if (infoJson != undefined) {
+                infoJson = JSON.parse(infoJson.data)
                 if (infoJson.provider && infoJson.chainId && infoJson.symbol) {
                     var rolloutAddrs = new Map<Numbers, string>()
                     if (infoJson.rolloutGateways) {
@@ -125,6 +126,7 @@ export class SupportedChainInfo {
         if (ret.ok) {
             var res = await ret.json()
             if (res != undefined) {
+                res = JSON.parse(res.data)
                 for (const v of res) {
                     var ContractInfos = new Map<string, supportedErc20Tokens>();
                     for (const s of v.ChainInfo.supportedErc20Tokens) {
@@ -148,7 +150,6 @@ export class SupportedChainInfo {
                     TempChainInfos.set(v.ChainInfo.chainId, chainInfo)
                 }
                 SupportedChainInfo.ChainInfos = TempChainInfos
-                //SupportedChainInfo.ChainInfos = infoJson;
             }
         }
     }

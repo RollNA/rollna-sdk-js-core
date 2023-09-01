@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ProposalType = exports.ArbSysAddr = exports.RollOutAddr = exports.preComplieAddr = exports.nodeInterfaceContractAddr = void 0;
 const ErrorType_1 = require("./ErrorType");
 const HttpsRpc_1 = require("../utils/client/HttpsRpc");
-const rollnaInfoUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/rollna_info.json";
-const chainInfosUrl = "https://rollna-static.s3.ap-southeast-2.amazonaws.com/config/content.json";
+const rollnaInfoUrl = "http://127.0.0.1:8331/config/getRollnaInfo";
+const chainInfosUrl = "http://127.0.0.1:8331/config/getChainsInfo";
 exports.nodeInterfaceContractAddr = "0x00000000000000000000000000000000000000C8";
 exports.preComplieAddr = "0xfffffff";
 exports.RollOutAddr = "0x0000000000000000000000000000000000000064";
@@ -24,6 +24,7 @@ class RollnaChainInfo {
         if (ret.ok) {
             var infoJson = await ret.json();
             if (infoJson != undefined) {
+                infoJson = JSON.parse(infoJson.data);
                 if (infoJson.provider && infoJson.chainId && infoJson.symbol) {
                     var rolloutAddrs = new Map();
                     if (infoJson.rolloutGateways) {
@@ -71,6 +72,7 @@ class SupportedChainInfo {
         if (ret.ok) {
             var res = await ret.json();
             if (res != undefined) {
+                res = JSON.parse(res.data);
                 for (const v of res) {
                     var ContractInfos = new Map();
                     for (const s of v.ChainInfo.supportedErc20Tokens) {
@@ -94,7 +96,6 @@ class SupportedChainInfo {
                     TempChainInfos.set(v.ChainInfo.chainId, chainInfo);
                 }
                 SupportedChainInfo.ChainInfos = TempChainInfos;
-                //SupportedChainInfo.ChainInfos = infoJson;
             }
         }
     }
