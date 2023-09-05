@@ -1,23 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ProposalType = exports.ArbSysAddr = exports.RollOutAddr = exports.preComplieAddr = exports.nodeInterfaceContractAddr = void 0;
-const ErrorType_1 = require("./ErrorType");
-const HttpsRpc_1 = require("../utils/client/HttpsRpc");
+exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ArbSysAddr = exports.RollOutAddr = exports.preComplieAddr = exports.nodeInterfaceContractAddr = void 0;
 const rollnaInfoUrl = "http://127.0.0.1:8331/config/getRollnaInfo";
 const chainInfosUrl = "http://127.0.0.1:8331/config/getChainsInfo";
 exports.nodeInterfaceContractAddr = "0x00000000000000000000000000000000000000C8";
 exports.preComplieAddr = "0xfffffff";
 exports.RollOutAddr = "0x0000000000000000000000000000000000000064";
 exports.ArbSysAddr = "0x0000000000000000000000000000000000000064";
-var ProposalType;
-(function (ProposalType) {
-    ProposalType[ProposalType["Lock"] = 0] = "Lock";
-    ProposalType[ProposalType["Unlock"] = 1] = "Unlock";
-    ProposalType[ProposalType["Recover"] = 2] = "Recover";
-})(ProposalType || (exports.ProposalType = ProposalType = {}));
 class RollnaChainInfo {
     static rollnaInfo;
-    static accountAbstractionTemplate;
     // test done
     static async updateRollNaInfo() {
         var ret = await fetch(rollnaInfoUrl);
@@ -43,22 +34,12 @@ class RollnaChainInfo {
             }
         }
     }
-    static async updateAAVersion() {
-        var ret = await (0, HttpsRpc_1.updateLatestAAVersion)();
-        if (ret != ErrorType_1.ErrorType.HttpRpcFailed && ret != null) {
-            RollnaChainInfo.accountAbstractionTemplate = ret;
-        }
-        return ret;
-    }
     // test done
     static async getRollNaInfo() {
         if (!RollnaChainInfo.rollnaInfo) {
             await RollnaChainInfo.updateRollNaInfo();
         }
         return RollnaChainInfo.rollnaInfo;
-    }
-    static getAAVersion() {
-        return RollnaChainInfo.accountAbstractionTemplate;
     }
 }
 exports.RollnaChainInfo = RollnaChainInfo;

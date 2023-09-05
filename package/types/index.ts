@@ -8,14 +8,6 @@ export const preComplieAddr = "0xfffffff";
 export const RollOutAddr = "0x0000000000000000000000000000000000000064";
 export const ArbSysAddr="0x0000000000000000000000000000000000000064"
 
-export enum ProposalType {
-    Lock,
-    Unlock,
-    Recover
-}
-
-export type AccountType = 'EOA' | 'AA';
-
 export interface CommonInput {
     from: string;
     to?: string;
@@ -70,7 +62,6 @@ export type ChainInfo = {
 
 export class RollnaChainInfo {
     private static rollnaInfo : RollnaInfo;
-    private static accountAbstractionTemplate : string;
     // test done
     static async updateRollNaInfo() {
         var ret = await fetch(rollnaInfoUrl)
@@ -96,13 +87,6 @@ export class RollnaChainInfo {
             }
         }
     }
-    static async updateAAVersion() {
-        var ret = await updateLatestAAVersion()
-        if (ret != ErrorType.HttpRpcFailed && ret != null) {
-            RollnaChainInfo.accountAbstractionTemplate = ret
-        }       
-        return ret
-    }
 
     // test done
     static async getRollNaInfo() {
@@ -110,9 +94,6 @@ export class RollnaChainInfo {
             await RollnaChainInfo.updateRollNaInfo()
         }
         return RollnaChainInfo.rollnaInfo;
-    }
-    static getAAVersion() {
-        return RollnaChainInfo.accountAbstractionTemplate
     }
 }
 
