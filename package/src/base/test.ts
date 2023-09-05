@@ -112,11 +112,10 @@ async function test_claim() {
     } else {
         toChainId = await index.getDestChainId(true, params.lrsender)
     }
-    //@ts-ignore
+    //@ts-ignore的风格会u都是说对哦乒乓球234
     var block_num = await index.getLatestConfirmBlock(toChainId)
 
     let size = await index.getMerkleTreeState(block_num)
-    console.log(size, params.leaf)
     let proof = await index.getRollOutProof(size, params.leaf)
     let input = await index.formatClaimTokenInput(
         proof,
