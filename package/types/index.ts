@@ -1,10 +1,7 @@
 import { Numbers } from "web3";
-import { ErrorType } from "./ErrorType"
-import {updateLatestAAVersion} from "../utils/client/HttpsRpc"
-const rollnaInfoUrl = "http://127.0.0.1:8331/config/getRollnaInfo";
-const chainInfosUrl = "http://127.0.0.1:8331/config/getChainsInfo";
+const rollnaInfoUrl = "https://openapi.rollna.io/config/getRollnaInfo";
+const chainInfosUrl = "https://openapi.rollna.io/config/getChainsInfo";
 export const nodeInterfaceContractAddr = "0x00000000000000000000000000000000000000C8";
-export const preComplieAddr = "0xfffffff";
 export const RollOutAddr = "0x0000000000000000000000000000000000000064";
 export const ArbSysAddr="0x0000000000000000000000000000000000000064"
 

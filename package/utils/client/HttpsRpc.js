@@ -1,35 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfirmBlock = exports.getRollOutTx = exports.getClaimParams = exports.updateLatestAAVersion = exports.lookupAAs = void 0;
+exports.getConfirmBlock = exports.getRollOutTx = exports.getClaimParams = void 0;
 const ErrorType_1 = require("../../types/ErrorType");
-const mappingAAUrl = "https://rollna.io/mappingAA";
-const latestAAAddr = "https://rollna.io/latestAAAddr";
-const getClaimParamsUrl = "http://127.0.0.1:8331/api/getClaimParams";
-const getRollOutTxUrl = "http://127.0.0.1:8331/api/getRollOutTx";
-const getConfirmBlockUrl = "http://127.0.0.1:8331/api/getConfirmBlock";
-async function lookupAAs(Eoa) {
-    var ret = await fetch(mappingAAUrl + "?eoa=" + Eoa);
-    if (ret.ok) {
-        var res = await ret.json();
-        if (res != undefined) {
-            if (Array.isArray(res)) {
-                return res;
-            }
-        }
-    }
-    return ErrorType_1.ErrorType.HttpRpcFailed;
-}
-exports.lookupAAs = lookupAAs;
-async function updateLatestAAVersion() {
-    var ret = await fetch(latestAAAddr);
-    if (ret.status != 200) {
-        return ErrorType_1.ErrorType.HttpRpcFailed;
-    }
-    else {
-        return await ret.json();
-    }
-}
-exports.updateLatestAAVersion = updateLatestAAVersion;
+const getClaimParamsUrl = "https://openapi.rollna.io/api/getClaimParams";
+const getRollOutTxUrl = "https://openapi.rollna.io/api/getRollOutTx";
+const getConfirmBlockUrl = "https://openapi.rollna.io/api/getConfirmBlock";
 // test done
 async function getClaimParams(TxHash) {
     var ret = await fetch(getClaimParamsUrl + "?txhash=" + TxHash);

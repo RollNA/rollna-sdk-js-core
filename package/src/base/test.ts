@@ -1,9 +1,8 @@
 import { Bytes, Numbers} from "web3";
 import * as Web3 from "web3";
 import { ErrorType } from "../../types/ErrorType";
-import {preComplieAddr, CommonInput, SupportedChainInfo, RollnaChainInfo} from "../../types";
+import {CommonInput, SupportedChainInfo, RollnaChainInfo} from "../../types";
 import { ContractInstanceFactory } from "../../contract/instanceFactory"
-import { lookupAAs } from "../../utils/client/HttpsRpc"
 import { NodeInterfaceContract } from "../../contract/nodeInterface"
 import claimAbi from "../../abi/IOutbox.json"
 import ArbAbi from "../../abi/ArbSys.json"
