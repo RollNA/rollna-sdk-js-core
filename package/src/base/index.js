@@ -80,7 +80,7 @@ async function formatRollInERC20Input(fromAddr, fromChainId, amount, tokenAddr, 
             let block = await Web3.eth.getBlock(web3Context);
             //@ts-ignore
             var basefee_num = BigInt(Web3.utils.hexToNumber(block.baseFeePerGas));
-            if (fromChainId == 1338) {
+            if (fromChainId != 5) {
                 basefee_num = BigInt(15000000000);
             }
             let maxSubmissionCost = basefee_num * BigInt(((outboundCalldata.length - 2) * 3 + 1400));
@@ -111,6 +111,7 @@ async function estimateRollInErc20fee(chainId, tokenAddr, gas, fromAddr, destAdd
             //@ts-ignore
             let outboundCalldata = await contract.methods.getOutboundCalldata(tokenAddr, fromAddr, destAddr, amount, []).call();
             if (!outboundCalldata) {
+                console.log("here");
                 return ErrorType_1.ErrorType.FormatInputFailed;
             }
             const web3Context = new Web3.Web3Context(rollnaInfo.rollnaProvider);
@@ -118,7 +119,7 @@ async function estimateRollInErc20fee(chainId, tokenAddr, gas, fromAddr, destAdd
             let block = await Web3.eth.getBlock(web3Context);
             //@ts-ignore
             var basefee_num = BigInt(Web3.utils.hexToNumber(block.baseFeePerGas));
-            if (chainId == 1338) {
+            if (chainId != 5) {
                 basefee_num = BigInt(15000000000);
             }
             let maxSubmissionCost = basefee_num * BigInt(((outboundCalldata.length - 2) * 3 + 1400));
