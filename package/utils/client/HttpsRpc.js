@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getConfirmBlock = exports.getRollOutTx = exports.getClaimParams = void 0;
 const ErrorType_1 = require("../../types/ErrorType");
-const getClaimParamsUrl = "https://openapi.rollna.io/api/getClaimParams";
-const getRollOutTxUrl = "https://openapi.rollna.io/api/getRollOutTx";
-const getConfirmBlockUrl = "https://openapi.rollna.io/api/getConfirmBlock";
+const getClaimParamsUrl = "http://openapi.cyclenetwork.io/api/getClaimParams";
+const getRollOutTxUrl = "http://openapi.cyclenetwork.io/api/getRollOutTx";
+const getConfirmBlockUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlock";
 // test done
 async function getClaimParams(TxHash) {
     var ret = await fetch(getClaimParamsUrl + "?txhash=" + TxHash);

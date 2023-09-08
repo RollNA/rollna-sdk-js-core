@@ -1,6 +1,6 @@
 import { Numbers } from "web3";
-const rollnaInfoUrl = "https://openapi.rollna.io/config/getRollnaInfo";
-const chainInfosUrl = "https://openapi.rollna.io/config/getChainsInfo";
+const rollnaInfoUrl = "http://openapi.cyclenetwork.io/config/getRollnaInfo";
+const chainInfosUrl = "http://openapi.cyclenetwork.io/config/getChainsInfo";
 export const nodeInterfaceContractAddr = "0x00000000000000000000000000000000000000C8";
 export const RollOutAddr = "0x0000000000000000000000000000000000000064";
 export const ArbSysAddr="0x0000000000000000000000000000000000000064"
