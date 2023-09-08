@@ -1,18 +1,16 @@
 import { Bytes, Numbers} from "web3";
 import * as Web3 from "web3";
 import { ErrorType } from "../../types/ErrorType";
-import {preComplieAddr, CommonInput, SupportedChainInfo, RollnaChainInfo} from "../../types";
+import {SupportedChainInfo, RollnaChainInfo} from "../../types";
 import { ContractInstanceFactory } from "../../contract/instanceFactory"
-import { lookupAAs } from "../../utils/client/HttpsRpc"
 import { NodeInterfaceContract } from "../../contract/nodeInterface"
 import claimAbi from "../../abi/IOutbox.json"
 import ArbAbi from "../../abi/ArbSys.json"
-import testMint from "../../abi/testErc20.json"
 import { ArbSysAddr } from "../../types/";
 import rollInAbi from "../../abi/IL1GatewayRouter.json"
 import L2Router from "../../abi/L2router.json"
 import L2Gateway from "../../abi/L2GatewayRouter.json"
-import { getRollOutTx, getClaimParams, getConfirmBlock } from "../../utils/client/HttpsRpc"
+import { getConfirmBlock } from "../../utils/client/HttpsRpc"
 import rollUpAbi from "../../abi/Rollup.json"
 import { toNumber } from "ethers";
 
@@ -76,7 +74,7 @@ export async function formatRollInERC20Input(
                let block = await Web3.eth.getBlock(web3Context)
                //@ts-ignore
                var basefee_num = BigInt(Web3.utils.hexToNumber(block.baseFeePerGas))
-               if (fromChainId == 1338) {
+               if (fromChainId != 5) {
                    basefee_num = BigInt(15000000000)
                }
                let maxSubmissionCost = basefee_num * BigInt(((outboundCalldata.length - 2) * 3 + 1400))
@@ -114,7 +112,7 @@ export async function estimateRollInErc20fee(chainId: Numbers, tokenAddr: string
                let block = await Web3.eth.getBlock(web3Context)
                //@ts-ignore
                var basefee_num = BigInt(Web3.utils.hexToNumber(block.baseFeePerGas))
-               if (chainId == 1338) {
+               if (chainId != 5) {
                    basefee_num = BigInt(15000000000)
                }
                let maxSubmissionCost = basefee_num * BigInt(((outboundCalldata.length - 2) * 3 + 1400))
