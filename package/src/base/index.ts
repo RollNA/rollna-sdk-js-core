@@ -105,7 +105,6 @@ export async function estimateRollInErc20fee(chainId: Numbers, tokenAddr: string
                //@ts-ignore
                let outboundCalldata = await contract.methods.getOutboundCalldata(tokenAddr, fromAddr, destAddr, amount, []).call()
                if (!outboundCalldata) {
-                   console.log("here")
                 return ErrorType.FormatInputFailed
                }
                const web3Context = new Web3.Web3Context(rollnaInfo.rollnaProvider);
