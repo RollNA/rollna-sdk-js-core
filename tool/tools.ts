@@ -1,7 +1,7 @@
 // usage
-// rollin_erc20: node rollin_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
-// rollout_erc20: node rollout_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
-// claim: node claim addr
+// rollin_erc20: node tools.js rollin_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
+// rollout_erc20: node tools.js rollout_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
+// claim: node tools.js claim addr
 // attention: 
 // 1. claim will firstly print all rollout tx your addr have sent,and await you to choose a tx to claim
 //    paste the tx in terminal and 回车, then it will process claim.
@@ -96,7 +96,7 @@ async function test_claim(from: string) {
         params.data
     )
     let toChainInfo = await SupportedChainInfo.getChainInfo(Number(toChainId))
-    var web3 = new Web3.Web3(toChainInfo?.Provider)
+    var web3 = new Web3.Web3("https://goerli.base.org")//toChainInfo?.Provider)
     web3.eth.accounts.wallet.add('0x0a4eb679dc5fcf150796fca0d0ebdf747ecf4bede66de4f5a7dd01042982f53f');
     if (toChainInfo) {
         var ret = await web3.eth.sendTransaction({

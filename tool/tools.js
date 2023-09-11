@@ -82,7 +82,7 @@ async function test_claim(from) {
     let proof = await index.getRollOutProof(size, params.leaf);
     let input = await index.formatClaimTokenInput(proof, params.leaf, params.lrsender, params.to, params.lrBlock, params.l1Block, params.lrtimestamp, Web3.utils.toHex(Web3.utils.toBigInt(params.value)), params.data);
     let toChainInfo = await types_1.SupportedChainInfo.getChainInfo(Number(toChainId));
-    var web3 = new Web3.Web3(toChainInfo?.Provider);
+    var web3 = new Web3.Web3("https://goerli.base.org"); //toChainInfo?.Provider)
     web3.eth.accounts.wallet.add('0x0a4eb679dc5fcf150796fca0d0ebdf747ecf4bede66de4f5a7dd01042982f53f');
     if (toChainInfo) {
         var ret = await web3.eth.sendTransaction({
