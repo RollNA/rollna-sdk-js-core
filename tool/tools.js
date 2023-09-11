@@ -104,7 +104,6 @@ if (args[2] == "rollin_erc20") {
         process.exit();
     }
     test_formatRollInERC20Input(Number(args[3]), args[4], args[5], args[6]);
-    process.exit();
 }
 if (args[2] == "rollout_erc20") {
     if (args.length != 7) {
@@ -112,7 +111,6 @@ if (args[2] == "rollout_erc20") {
         process.exit();
     }
     test_formatRollOutERC20Input(Number(args[3]), args[4], args[5], args[6]);
-    process.exit();
 }
 if (args[2] == "claim") {
     if (args.length != 4) {
@@ -121,5 +119,4 @@ if (args[2] == "claim") {
     }
     //@ts-ignore
     test_claim(args[3]);
-    process.exit();
 }
