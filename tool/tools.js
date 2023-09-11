@@ -1,8 +1,8 @@
 "use strict";
 // usage
-// rollin_erc20: node rollin_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
-// rollout_erc20: node rollout_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
-// claim: node claim addr
+// rollin_erc20: node tools.js rollin_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
+// rollout_erc20: node tools.js rollout_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
+// claim: node tools.js claim addr
 // attention: 
 // 1. claim will firstly print all rollout tx your addr have sent,and await you to choose a tx to claim
 //    paste the tx in terminal and 回车, then it will process claim.
@@ -39,6 +39,7 @@ const HttpsRpc_1 = require("../package/utils/client/HttpsRpc");
 const index = __importStar(require("../package/src/base/index"));
 const readlineSync = require('readline-sync');
 async function test_formatRollInERC20Input(chainId, token, amount, to) {
+    amount = Web3.utils.toHex(amount);
     let estimate_fee = await index.estimateRollInErc20fee(chainId, token, 500000, "0x777aDd3378b999235cce77F71292dAc1E8095FFC", to, amount);
     if (estimate_fee == ErrorType_1.ErrorType.FormatInputFailed) {
         return;
@@ -53,6 +54,8 @@ async function test_formatRollInERC20Input(chainId, token, amount, to) {
     }
 }
 async function test_formatRollOutERC20Input(chainId, token, amount, to) {
+    amount = Web3.utils.toHex(Web3.utils.toBigInt(amount));
+    console.log(amount);
     let input = await index.formatRollOutERC20Input("0x777aDd3378b999235cce77F71292dAc1E8095FFC", chainId, amount, token, to, 800000000, "0xfffffff");
     if (input != ErrorType_1.ErrorType.FormatInputFailed) {
         let web3 = new Web3.Web3("https://goerli.cyclenetwork.io");
@@ -82,7 +85,7 @@ async function test_claim(from) {
     let proof = await index.getRollOutProof(size, params.leaf);
     let input = await index.formatClaimTokenInput(proof, params.leaf, params.lrsender, params.to, params.lrBlock, params.l1Block, params.lrtimestamp, Web3.utils.toHex(Web3.utils.toBigInt(params.value)), params.data);
     let toChainInfo = await types_1.SupportedChainInfo.getChainInfo(Number(toChainId));
-    var web3 = new Web3.Web3("https://goerli.base.org"); //toChainInfo?.Provider)
+    var web3 = new Web3.Web3(toChainInfo?.Provider);
     web3.eth.accounts.wallet.add('0x0a4eb679dc5fcf150796fca0d0ebdf747ecf4bede66de4f5a7dd01042982f53f');
     if (toChainInfo) {
         var ret = await web3.eth.sendTransaction({
