@@ -2,6 +2,7 @@
 // rollin_erc20: node tools.js rollin_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
 // rollout_erc20: node tools.js rollout_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
 // claim: node tools.js claim addr
+// get_erc20_balance: node tools.js chainId token_addr addr
 // attention: 
 // 1. claim will firstly print all rollout tx your addr have sent,and await you to choose a tx to claim
 //    paste the tx in terminal and 回车, then it will process claim.
@@ -15,6 +16,7 @@ import {SupportedChainInfo} from "../package/types";
 import { getRollOutTx, getClaimParams } from "../package/utils/client/HttpsRpc"
 import * as index from "../package/src/base/index"
 const readlineSync = require('readline-sync');
+import erc20 from "../package/abi/testErc20.json";
 
 async function test_formatRollInERC20Input(chainId: Numbers, token: string, amount: string, to: string) {
     amount = Web3.utils.toHex(Web3.utils.toBigInt(amount))
@@ -111,6 +113,15 @@ async function test_claim(from: string) {
     }
 }
 
+async function get_erc20_balance(chainId: Numbers, tokenAddr: string, addr: string) {
+    let chainInfo = await SupportedChainInfo.getChainInfo(Number(chainId))
+    var contract = new Web3.eth.contract.Contract(erc20, tokenAddr);
+    contract.setProvider(chainInfo?.Provider)
+    //@ts-ignore
+    var res = await contract.methods.balanceOf(addr).call()
+    console.log(res)
+}
+
 let args = process.argv;
 if (args.length <= 0) {
     console.log("invalid input")
@@ -138,4 +149,12 @@ if (args[2] == "claim") {
     }
     //@ts-ignore
     test_claim(args[3])
+}
+
+if (args[2] == "get_erc20_balance") {
+    if (args.length != 6) {
+        console.log("invaild input")
+        process.exit()
+    }
+    get_erc20_balance(args[3], args[4], args[5])
 }

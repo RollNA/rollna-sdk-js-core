@@ -3,6 +3,7 @@
 // rollin_erc20: node tools.js rollin_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
 // rollout_erc20: node tools.js rollout_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
 // claim: node tools.js claim addr
+// get_erc20_balance: node tools.js chainId token_addr addr
 // attention: 
 // 1. claim will firstly print all rollout tx your addr have sent,and await you to choose a tx to claim
 //    paste the tx in terminal and 回车, then it will process claim.
@@ -31,6 +32,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Web3 = __importStar(require("web3"));
 const ErrorType_1 = require("../package/types/ErrorType");
@@ -38,8 +42,9 @@ const types_1 = require("../package/types");
 const HttpsRpc_1 = require("../package/utils/client/HttpsRpc");
 const index = __importStar(require("../package/src/base/index"));
 const readlineSync = require('readline-sync');
+const testErc20_json_1 = __importDefault(require("../package/abi/testErc20.json"));
 async function test_formatRollInERC20Input(chainId, token, amount, to) {
-    amount = Web3.utils.toHex(amount);
+    amount = Web3.utils.toHex(Web3.utils.toBigInt(amount));
     let estimate_fee = await index.estimateRollInErc20fee(chainId, token, 500000, "0x777aDd3378b999235cce77F71292dAc1E8095FFC", to, amount);
     if (estimate_fee == ErrorType_1.ErrorType.FormatInputFailed) {
         return;
@@ -55,7 +60,6 @@ async function test_formatRollInERC20Input(chainId, token, amount, to) {
 }
 async function test_formatRollOutERC20Input(chainId, token, amount, to) {
     amount = Web3.utils.toHex(Web3.utils.toBigInt(amount));
-    console.log(amount);
     let input = await index.formatRollOutERC20Input("0x777aDd3378b999235cce77F71292dAc1E8095FFC", chainId, amount, token, to, 800000000, "0xfffffff");
     if (input != ErrorType_1.ErrorType.FormatInputFailed) {
         let web3 = new Web3.Web3("https://goerli.cyclenetwork.io");
@@ -97,6 +101,14 @@ async function test_claim(from) {
         console.log(ret);
     }
 }
+async function get_erc20_balance(chainId, tokenAddr, addr) {
+    let chainInfo = await types_1.SupportedChainInfo.getChainInfo(Number(chainId));
+    var contract = new Web3.eth.contract.Contract(testErc20_json_1.default, tokenAddr);
+    contract.setProvider(chainInfo?.Provider);
+    //@ts-ignore
+    var res = await contract.methods.balanceOf(addr).call();
+    console.log(res);
+}
 let args = process.argv;
 if (args.length <= 0) {
     console.log("invalid input");
@@ -122,4 +134,11 @@ if (args[2] == "claim") {
     }
     //@ts-ignore
     test_claim(args[3]);
+}
+if (args[2] == "get_erc20_balance") {
+    if (args.length != 6) {
+        console.log("invaild input");
+        process.exit();
+    }
+    get_erc20_balance(args[3], args[4], args[5]);
 }
