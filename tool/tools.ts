@@ -1,6 +1,6 @@
 // usage
-// rollin_erc20: node tools.js rollin_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
-// rollout_erc20: node tools.js rollout_erc20 chainId token_addr(L1/Le) amount(in hex string) destination
+// rollin_erc20: node tools.js rollin_erc20 chainId token_addr(L1/Le) amount(in number) destination
+// rollout_erc20: node tools.js rollout_erc20 chainId token_addr(L1/Le) amount(in number) destination
 // claim: node tools.js claim addr
 // get_erc20_balance: node tools.js chainId token_addr addr
 // attention: 
@@ -116,11 +116,16 @@ async function test_claim(from: string) {
 async function get_erc20_balance(chainId: Numbers, tokenAddr: string, addr: string) {
     let chainInfo = await SupportedChainInfo.getChainInfo(Number(chainId))
     var contract = new Web3.eth.contract.Contract(erc20, tokenAddr);
-    contract.setProvider(chainInfo?.Provider)
+    if (chainId == 6787) {
+        contract.setProvider("https://goerli.cyclenetwork.io")
+    } else {
+        contract.setProvider(chainInfo?.Provider)
+    }
     //@ts-ignore
     var res = await contract.methods.balanceOf(addr).call()
     console.log(res)
 }
+
 
 let args = process.argv;
 if (args.length <= 0) {
