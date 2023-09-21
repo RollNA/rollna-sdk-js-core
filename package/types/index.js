@@ -10,28 +10,38 @@ class RollnaChainInfo {
     static rollnaInfo;
     // test done
     static async updateRollNaInfo() {
+        if (process.env.CYCLE_ENV == "test" && process.env.CYCLE_INFO) {
+            let res = JSON.parse(process.env.CYCLE_INFO);
+            let TempRollnaInfo = RollnaChainInfo.formatRollNAInfo(res);
+            RollnaChainInfo.rollnaInfo = TempRollnaInfo;
+            return;
+        }
         var ret = await fetch(rollnaInfoUrl);
         if (ret.ok) {
             var infoJson = await ret.json();
             if (infoJson != undefined) {
                 infoJson = JSON.parse(infoJson.data);
                 if (infoJson.provider && infoJson.chainId && infoJson.symbol) {
-                    var rolloutAddrs = new Map();
-                    if (infoJson.rolloutGateways) {
-                        for (const v of infoJson.rolloutGateways) {
-                            rolloutAddrs.set(v.chainId, v.router);
-                        }
-                    }
-                    var TempRollnaInfo = {
-                        rollnaProvider: infoJson.provider,
-                        rollnaChainId: infoJson.chainId,
-                        rollnaTokenSymbols: infoJson.symbol,
-                        routerAddrs: rolloutAddrs
-                    };
+                    let TempRollnaInfo = RollnaChainInfo.formatRollNAInfo(infoJson);
                     RollnaChainInfo.rollnaInfo = TempRollnaInfo;
                 }
             }
         }
+    }
+    static formatRollNAInfo(infoJson) {
+        var rolloutAddrs = new Map();
+        if (infoJson.rolloutGateways) {
+            for (const v of infoJson.rolloutGateways) {
+                rolloutAddrs.set(v.chainId, v.router);
+            }
+        }
+        var TempRollnaInfo = {
+            rollnaProvider: infoJson.provider,
+            rollnaChainId: infoJson.chainId,
+            rollnaTokenSymbols: infoJson.symbol,
+            routerAddrs: rolloutAddrs
+        };
+        return TempRollnaInfo;
     }
     // test done
     static async getRollNaInfo() {
@@ -47,37 +57,47 @@ class SupportedChainInfo {
     constructor() { }
     // test done
     static async updateChainInfos() {
-        var TempChainInfos = new Map();
+        if (process.env.CYCLE_ENV == "test" && process.env.CYCLE_CONTENT) {
+            res = JSON.parse(process.env.CYCLE_CONTENT);
+            let TempChainInfos = SupportedChainInfo.formatChainInfo(res);
+            SupportedChainInfo.ChainInfos = TempChainInfos;
+            return;
+        }
         var ret = await fetch(chainInfosUrl);
         if (ret.ok) {
             var res = await ret.json();
             if (res != undefined) {
                 res = JSON.parse(res.data);
-                for (const v of res) {
-                    var ContractInfos = new Map();
-                    for (const s of v.ChainInfo.supportedErc20Tokens) {
-                        var contract_info = {
-                            tokenAddr: s.tokenAddr,
-                            gatewayAddr: s.gatewayAddr,
-                            destTokenAddr: s.destTokenAddr
-                        };
-                        ContractInfos.set(s.tokenAddr, contract_info);
-                    }
-                    var chainInfo = {
-                        ContractInfos: ContractInfos,
-                        RouterAddr: v.ChainInfo.routerAddr,
-                        EthGatewayAddr: v.ChainInfo.EthGatewayAddr,
-                        OutBox: v.ChainInfo.outbox,
-                        RollUp: v.ChainInfo.rollup,
-                        Provider: v.ChainInfo.provider,
-                        ChainId: v.ChainInfo.chainId
-                    };
-                    chainInfo.ChainId = v.ChainInfo.chainId;
-                    TempChainInfos.set(v.ChainInfo.chainId, chainInfo);
-                }
+                let TempChainInfos = SupportedChainInfo.formatChainInfo(res);
                 SupportedChainInfo.ChainInfos = TempChainInfos;
             }
         }
+    }
+    static formatChainInfo(input) {
+        var TempChainInfos = new Map();
+        for (const v of input) {
+            var ContractInfos = new Map();
+            for (const s of v.ChainInfo.supportedErc20Tokens) {
+                var contract_info = {
+                    tokenAddr: s.tokenAddr,
+                    gatewayAddr: s.gatewayAddr,
+                    destTokenAddr: s.destTokenAddr
+                };
+                ContractInfos.set(s.tokenAddr, contract_info);
+            }
+            var chainInfo = {
+                ContractInfos: ContractInfos,
+                RouterAddr: v.ChainInfo.routerAddr,
+                EthGatewayAddr: v.ChainInfo.EthGatewayAddr,
+                OutBox: v.ChainInfo.outbox,
+                RollUp: v.ChainInfo.rollup,
+                Provider: v.ChainInfo.provider,
+                ChainId: v.ChainInfo.chainId
+            };
+            chainInfo.ChainId = v.ChainInfo.chainId;
+            TempChainInfos.set(v.ChainInfo.chainId, chainInfo);
+        }
+        return TempChainInfos;
     }
     // test done
     static async getChainInfo(chainId) {
