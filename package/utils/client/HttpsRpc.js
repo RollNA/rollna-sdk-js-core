@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfirmBlock = exports.getRollOutTx = exports.getClaimParams = void 0;
+exports.getConfirmBlockNum = exports.getRollOutTx = exports.getClaimParams = void 0;
 const ErrorType_1 = require("../../types/ErrorType");
 const getClaimParamsUrl = "http://openapi.cyclenetwork.io/api/getClaimParams";
 const getRollOutTxUrl = "http://openapi.cyclenetwork.io/api/getRollOutTx";
-const getConfirmBlockUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlockNum";
+const getConfirmBlockNumUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlockNum";
 // test done
 async function getClaimParams(TxHash) {
     let url = getClaimParamsUrl;
@@ -41,8 +41,8 @@ async function getRollOutTx(sender) {
     return ErrorType_1.ErrorType.HttpRpcFailed;
 }
 exports.getRollOutTx = getRollOutTx;
-async function getConfirmBlock(confirmdata) {
-    let url = getConfirmBlockUrl;
+async function getConfirmBlockNum(confirmdata) {
+    let url = getConfirmBlockNumUrl;
     if (process.env.CYCLE_ENV == "test" && process.env.CONFIG_ENV) {
         res = JSON.parse(process.env.CONFIG_ENV);
         url = res.getConfirmBlockUrl;
@@ -57,4 +57,4 @@ async function getConfirmBlock(confirmdata) {
     }
     return ErrorType_1.ErrorType.HttpRpcFailed;
 }
-exports.getConfirmBlock = getConfirmBlock;
+exports.getConfirmBlockNum = getConfirmBlockNum;

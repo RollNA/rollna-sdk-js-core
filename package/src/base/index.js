@@ -232,7 +232,7 @@ async function getLatestConfirmBlock(chainId) {
             var confirmdata = await contract.methods.getNode(block_num).call();
             if (confirmdata) {
                 //@ts-ignore
-                return (0, HttpsRpc_1.getConfirmBlock)(confirmdata.confirmData);
+                return (0, HttpsRpc_1.getConfirmBlockNum)(confirmdata.confirmData);
             }
         }
     }

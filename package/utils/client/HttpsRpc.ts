@@ -3,7 +3,7 @@
 import { ErrorType } from "../../types/ErrorType";
 const getClaimParamsUrl = "http://openapi.cyclenetwork.io/api/getClaimParams"
 const getRollOutTxUrl = "http://openapi.cyclenetwork.io/api/getRollOutTx"
-const getConfirmBlockUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlockNum"
+const getConfirmBlockNumUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlockNum"
 
 // test done
 export async function getClaimParams(TxHash: string) {
@@ -41,8 +41,8 @@ export async function getRollOutTx(sender: string) {
     return ErrorType.HttpRpcFailed
 }
 
-export async function getConfirmBlock(confirmdata: string) {
-    let url = getConfirmBlockUrl
+export async function getConfirmBlockNum(confirmdata: string) {
+    let url = getConfirmBlockNumUrl
     if (process.env.CYCLE_ENV == "test" && process.env.CONFIG_ENV) {
         res = JSON.parse(process.env.CONFIG_ENV)
         url = res.getConfirmBlockUrl
