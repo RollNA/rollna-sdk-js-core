@@ -10,7 +10,7 @@ import { ArbSysAddr } from "../../types/";
 import rollInAbi from "../../abi/IL1GatewayRouter.json"
 import L2Router from "../../abi/L2router.json"
 import L2Gateway from "../../abi/L2GatewayRouter.json"
-import { getConfirmBlock } from "../../utils/client/HttpsRpc"
+import { getConfirmBlockNum } from "../../utils/client/HttpsRpc"
 import rollUpAbi from "../../abi/Rollup.json"
 import { toNumber } from "ethers";
 
@@ -245,7 +245,7 @@ export async function getLatestConfirmBlock(chainId: Numbers) {
             var confirmdata = await contract.methods.getNode(block_num).call()
             if (confirmdata) {
                 //@ts-ignore
-                return getConfirmBlock(confirmdata.confirmData)
+                return getConfirmBlockNum(confirmdata.confirmData)
             }
         }
     }

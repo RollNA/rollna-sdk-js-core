@@ -3,11 +3,16 @@
 import { ErrorType } from "../../types/ErrorType";
 const getClaimParamsUrl = "http://openapi.cyclenetwork.io/api/getClaimParams"
 const getRollOutTxUrl = "http://openapi.cyclenetwork.io/api/getRollOutTx"
-const getConfirmBlockUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlock"
+const getConfirmBlockNumUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlockNum"
 
 // test done
 export async function getClaimParams(TxHash: string) {
-    var ret =  await fetch(getClaimParamsUrl + "?txhash=" + TxHash)
+    let url = getClaimParamsUrl
+    if (process.env.CYCLE_ENV == "test" && process.env.CONFIG_ENV) {
+        res = JSON.parse(process.env.CONFIG_ENV)
+        url = res.getClaimParamsUrl
+    }
+    var ret =  await fetch(url + "?txhash=" + TxHash)
     if (ret.ok) {
         var res = await ret.json()
         if (res != undefined) {
@@ -20,7 +25,12 @@ export async function getClaimParams(TxHash: string) {
 
 // test done
 export async function getRollOutTx(sender: string) {
-    var ret =  await fetch(getRollOutTxUrl + "?sender=" + sender)
+    let url = getRollOutTxUrl
+    if (process.env.CYCLE_ENV == "test" && process.env.CONFIG_ENV) {
+        res = JSON.parse(process.env.CONFIG_ENV)
+        url = res.getRollOutTxUrl
+    }
+    var ret =  await fetch(url + "?sender=" + sender)
     if (ret.ok) {
         var res = await ret.json()
         if (res != undefined) {
@@ -31,13 +41,13 @@ export async function getRollOutTx(sender: string) {
     return ErrorType.HttpRpcFailed
 }
 
-export async function getConfirmBlock(confirmdata: string) {
-    let body = new FormData();
-    body.append("confirmdata", confirmdata)
-    var ret =  await fetch(getConfirmBlockUrl, {
-        method: "POST",
-        body: body
-    })
+export async function getConfirmBlockNum(confirmdata: string) {
+    let url = getConfirmBlockNumUrl
+    if (process.env.CYCLE_ENV == "test" && process.env.CONFIG_ENV) {
+        res = JSON.parse(process.env.CONFIG_ENV)
+        url = res.getConfirmBlockUrl
+    }
+    var ret =  await fetch(url + "?confirm_data=" + confirmdata)
     if (ret.ok) {
         var res = await ret.json()
         if (res != undefined) {
@@ -47,3 +57,4 @@ export async function getConfirmBlock(confirmdata: string) {
     }
     return ErrorType.HttpRpcFailed
 }
+
