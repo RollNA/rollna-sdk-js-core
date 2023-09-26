@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SupportedChainInfo = exports.RollnaChainInfo = exports.ArbSysAddr = exports.RollOutAddr = exports.nodeInterfaceContractAddr = void 0;
-const rollnaInfoUrl = "http://openapi.cyclenetwork.io/config/getRollnaInfo";
-const chainInfosUrl = "http://openapi.cyclenetwork.io/config/getChainsInfo";
+const rollnaInfoUrl = "https://openapi.cyclenetwork.io/config/getRollnaInfo";
+const chainInfosUrl = "https://openapi.cyclenetwork.io/config/getChainsInfo";
 exports.nodeInterfaceContractAddr = "0x00000000000000000000000000000000000000C8";
 exports.RollOutAddr = "0x0000000000000000000000000000000000000064";
 exports.ArbSysAddr = "0x0000000000000000000000000000000000000064";
