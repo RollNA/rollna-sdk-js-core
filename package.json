@@ -1,6 +1,6 @@
 {
   "name": "cycle-sdk-js-core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "index.js",
   "scripts": {
     "lint": "eslint --ext=.jsx,.js,.tsx,.ts"
