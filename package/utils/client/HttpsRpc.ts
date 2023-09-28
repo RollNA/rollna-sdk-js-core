@@ -1,9 +1,9 @@
 
 
 import { ErrorType } from "../../types/ErrorType";
-const getClaimParamsUrl = "http://openapi.cyclenetwork.io/api/getClaimParams"
-const getRollOutTxUrl = "http://openapi.cyclenetwork.io/api/getRollOutTx"
-const getConfirmBlockNumUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlockNum"
+const getClaimParamsUrl = "https://openapi.cyclenetwork.io/api/getClaimParams"
+const getRollOutTxUrl = "https://openapi.cyclenetwork.io/api/getRollOutTx"
+const getConfirmBlockNumUrl = "https://openapi.cyclenetwork.io/api/getConfirmBlockNum"
 
 // test done
 export async function getClaimParams(TxHash: string) {

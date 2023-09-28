@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getConfirmBlockNum = exports.getRollOutTx = exports.getClaimParams = void 0;
 const ErrorType_1 = require("../../types/ErrorType");
-const getClaimParamsUrl = "http://openapi.cyclenetwork.io/api/getClaimParams";
-const getRollOutTxUrl = "http://openapi.cyclenetwork.io/api/getRollOutTx";
-const getConfirmBlockNumUrl = "http://openapi.cyclenetwork.io/api/getConfirmBlockNum";
+const getClaimParamsUrl = "https://openapi.cyclenetwork.io/api/getClaimParams";
+const getRollOutTxUrl = "https://openapi.cyclenetwork.io/api/getRollOutTx";
+const getConfirmBlockNumUrl = "https://openapi.cyclenetwork.io/api/getConfirmBlockNum";
 // test done
 async function getClaimParams(TxHash) {
     let url = getClaimParamsUrl;

@@ -1,5 +1,6 @@
 import { Bytes, Numbers} from "web3";
 import * as Web3 from "web3";
+import {getClaimParams} from "../../utils/client/HttpsRpc"
 import { ErrorType } from "../../types/ErrorType";
 import {SupportedChainInfo, RollnaChainInfo} from "../../types";
 import { ContractInstanceFactory } from "../../contract/instanceFactory"
@@ -10,6 +11,7 @@ import { ArbSysAddr } from "../../types/";
 import rollInAbi from "../../abi/IL1GatewayRouter.json"
 import L2Router from "../../abi/L2router.json"
 import L2Gateway from "../../abi/L2GatewayRouter.json"
+import OutBox from "../../abi/IOutbox.json"
 import { getConfirmBlockNum } from "../../utils/client/HttpsRpc"
 import rollUpAbi from "../../abi/Rollup.json"
 import { toNumber } from "ethers";
@@ -266,4 +268,14 @@ export function formatClaimTokenInput(
     var contract = new Web3.eth.contract.Contract(claimAbi)
     //@ts-ignore
     return contract.methods.executeTransaction(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value, data).encodeABI()       
+}
+
+
+export async function checkClaimStatus(tx: string, chainId: Numbers) {
+    let toChainInfo = await SupportedChainInfo.getChainInfo(chainId)
+    var contract = new Web3.eth.contract.Contract(OutBox, toChainInfo?.OutBox)
+    let params = await getClaimParams(tx)
+    contract.setProvider(toChainInfo?.Provider)
+     //@ts-ignore
+    return await contract.methods.isSpent(params.leaf).call()
 }
