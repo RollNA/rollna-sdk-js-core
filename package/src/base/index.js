@@ -26,8 +26,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatClaimTokenInput = exports.getLatestConfirmBlock = exports.getDestChainId = exports.getRollOutProof = exports.getMerkleTreeState = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.estimateRollInErc20fee = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
+exports.checkClaimStatus = exports.formatClaimTokenInput = exports.getLatestConfirmBlock = exports.getDestChainId = exports.getRollOutProof = exports.getMerkleTreeState = exports.formatRollOutERC20Input = exports.formatRollOutInput = exports.estimateRollInErc20fee = exports.formatRollInERC20Input = exports.formatRollInInput = void 0;
 const Web3 = __importStar(require("web3"));
+const HttpsRpc_1 = require("../../utils/client/HttpsRpc");
 const ErrorType_1 = require("../../types/ErrorType");
 const types_1 = require("../../types");
 const instanceFactory_1 = require("../../contract/instanceFactory");
@@ -38,7 +39,8 @@ const types_2 = require("../../types/");
 const IL1GatewayRouter_json_1 = __importDefault(require("../../abi/IL1GatewayRouter.json"));
 const L2router_json_1 = __importDefault(require("../../abi/L2router.json"));
 const L2GatewayRouter_json_1 = __importDefault(require("../../abi/L2GatewayRouter.json"));
-const HttpsRpc_1 = require("../../utils/client/HttpsRpc");
+const IOutbox_json_2 = __importDefault(require("../../abi/IOutbox.json"));
+const HttpsRpc_2 = require("../../utils/client/HttpsRpc");
 const Rollup_json_1 = __importDefault(require("../../abi/Rollup.json"));
 const ethers_1 = require("ethers");
 // test done
@@ -232,7 +234,7 @@ async function getLatestConfirmBlock(chainId) {
             var confirmdata = await contract.methods.getNode(block_num).call();
             if (confirmdata) {
                 //@ts-ignore
-                return (0, HttpsRpc_1.getConfirmBlockNum)(confirmdata.confirmData);
+                return (0, HttpsRpc_2.getConfirmBlockNum)(confirmdata.confirmData);
             }
         }
     }
@@ -245,3 +247,12 @@ function formatClaimTokenInput(proof, index, lrSender, to, lrBlock, l1Block, lrT
     return contract.methods.executeTransaction(proof, index, lrSender, to, lrBlock, l1Block, lrTimestamp, value, data).encodeABI();
 }
 exports.formatClaimTokenInput = formatClaimTokenInput;
+async function checkClaimStatus(tx, chainId) {
+    let toChainInfo = await types_1.SupportedChainInfo.getChainInfo(chainId);
+    var contract = new Web3.eth.contract.Contract(IOutbox_json_2.default, toChainInfo?.OutBox);
+    let params = await (0, HttpsRpc_1.getClaimParams)(tx);
+    contract.setProvider(toChainInfo?.Provider);
+    //@ts-ignore
+    return await contract.methods.isSpent(params.leaf).call();
+}
+exports.checkClaimStatus = checkClaimStatus;

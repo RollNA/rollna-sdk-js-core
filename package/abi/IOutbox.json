@@ -392,9 +392,28 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "sendRoot",
-        "type": "bytes32"
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "isSpent",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       },
       {
         "internalType": "bytes32",
